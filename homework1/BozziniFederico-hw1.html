@@ -12,18 +12,16 @@
             content: ": ";
         }
         
-        .info dt,
-        .info dd {
-            display: inline-block;
-        }
-        
         .info dt {
             width: 50px;
+            display: inline-block;
         }
         
         .info dd {
             margin: 0;
+            display: inline-block;
         }
+
         /* --------------------------------------------------- */
         /* Bar charts */
         /* --------------------------------------------------- */
@@ -34,6 +32,7 @@
             stroke-width: 2px;
             vector-effect: non-scaling-stroke;
         }
+
         /* --------------------------------------------------- */
         /* Line charts */
         /* --------------------------------------------------- */
@@ -47,6 +46,7 @@
         .linecharts path {
             vector-effect: non-scaling-stroke;
         }
+
         /* --------------------------------------------------- */
         /* Area charts */
         /* --------------------------------------------------- */
@@ -54,6 +54,7 @@
         .areacharts path {
             fill: green;
         }
+
         /* --------------------------------------------------- */
         /* Scatterplot */
         /* --------------------------------------------------- */
@@ -61,6 +62,19 @@
         .scatterplot circle {
             fill: green;
         }
+
+        /* --------------------------------------------------- */
+        /* Layout */
+        /* --------------------------------------------------- */
+        
+        .barcharts, .linecharts, .areacharts, .scatterplot {
+            display:inline-block;
+            width: 45%;
+            max-width: 550px;
+            margin-bottom: 40px;
+            vertical-align: top;
+        }
+        
         /* --------------------------------------------------- */
     </style>
 </head>
