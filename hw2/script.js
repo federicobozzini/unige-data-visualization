@@ -2,7 +2,14 @@
 // These keep JSHint quiet if you're using it
 
 function staircase() {
-    // ****** TODO: PART II ******
+    const staircaseChart = document.getElementById("firstBarChart");
+    const rects = [...staircaseChart.children[0].children];
+    rects.forEach((r, i) => {
+        r.setAttribute('width', '1');
+        r.setAttribute('height', (i+1) * 6);
+        r.setAttribute('x', i);
+        r.setAttribute('y', 0);
+    });
 }
 
 function update(error, data) {
