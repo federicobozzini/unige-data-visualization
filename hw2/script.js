@@ -110,3 +110,15 @@ function randomSubset() {
         changeData();
     }
 }
+
+function init() {
+    const staircaseBtn = document.getElementById("staircase");
+    const datasetSlt = document.getElementById("dataset");
+    const randomCbx = document.getElementById("random");
+
+    staircaseBtn.addEventListener("click", staircase);
+    datasetSlt.addEventListener("change", changeData);
+    randomCbx.addEventListener("change", randomSubset);
+}
+
+init();
