@@ -51,12 +51,14 @@ function update(error, data) {
     var iScale = d3.scaleLinear()
         .domain([0, data.length])
         .range([0, 110]);
-
     // ****** TODO: PART III (you will also edit in PART V) ******
 
     // TODO: Select and update the 'a' bar chart bars
+    d3.select(".barChart").selectAll("svg").attr("viewBox", "0 0 200 120");
+    d3.select("#firstBarChart").selectAll("rect").attr('width', (d, i) => aScale(data[i].a));
 
     // TODO: Select and update the 'b' bar chart bars
+    d3.select("#secondBarChart").selectAll("rect").attr('width', (d, i) => aScale(data[i].b));
 
     // TODO: Select and update the 'a' line chart path using this line generator
     var aLineGenerator = d3.line()
