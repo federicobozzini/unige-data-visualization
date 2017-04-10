@@ -52,6 +52,14 @@
         span {
             padding: 1em;
         }
+
+        #tooltip {
+            position: absolute;	
+            opacity: 1;	
+            background-color: lightgrey;
+            border:1px grey solid;
+            border-radius: 2px;
+        }
     </style>
 </head>
 
@@ -90,7 +98,7 @@
 
         <div class="barChart">
             <h2>Bar Charts</h2>
-            <svg id="firstBarChart" width="200" height="200" viewbox="0 0 20 120" preserveAspectRatio="none">
+            <svg id="barChartA" width="200" height="200" viewbox="0 0 20 120" preserveAspectRatio="none">
                 <g transform="translate(0, 110) scale(1, -1)">
                     <rect y="0" width="10" height="10" />
                     <rect y="10" width="8" height="10" />
@@ -106,7 +114,7 @@
                 </g>
             </svg>
 
-            <svg id="secondBarChart"  width="200" height="200" viewbox="0 0 20 120" preserveAspectRatio="none">
+            <svg id="barChartB"  width="200" height="200" viewbox="0 0 20 120" preserveAspectRatio="none">
                 <g transform="translate(0, 110) scale(1, -1) ">
                     <rect y="0 " width="8.04 " height="10 " />
                     <rect y="10 " width="6.95 " height="10 " />
@@ -126,13 +134,13 @@
         <div class="lines">
             <h2>Line Charts</h2>
 
-            <svg width="200" height="200" viewbox="0 0 140 16" preserveAspectRatio="none">
+            <svg id="lineChartA" width="200" height="200" viewbox="0 0 140 16" preserveAspectRatio="none">
                 <g transform="translate(0, 15) scale(1, -1) ">
                     <path d="M 0 10.0 L 10 8.0 L 20 13.0 L 30 9.0 L 40 11.0 L 50 14.0 L 60 6.0 L 70 4.0 L 80 12.0 L 90 7.0 L 100 5.0 " />
                 </g>
             </svg>
 
-            <svg width="200" height="200" viewbox="0 0 140 16" preserveAspectRatio="none">
+            <svg id="lineChartB" width="200" height="200" viewbox="0 0 140 16" preserveAspectRatio="none">
                 <g transform="translate(0, 15) scale(1, -1)">
                     <path d="M 0 8.04 L 10 6.95 L 20 7.58 L 30 8.81 L 40 8.33 L 50 9.96 L 60 7.24 L 70 4.26 L 80 10.84 L 90 4.82 L 100 5.68"
                     />
@@ -143,24 +151,24 @@
         <div class="areas">
             <h2>Area Charts</h2>
 
-            <svg width="200" height="200" viewbox="0 0 140 16" preserveAspectRatio="none">
+            <svg id="areaChartA" width="200" height="200" viewbox="0 0 140 16" preserveAspectRatio="none">
                 <g transform="translate(0, 15) scale(1, -1) ">
                     <path d="M 0 10.0 L 10 8.0 L 20 13.0 L 30 9.0 L 40 11.0 L 50 14.0 L 60 6.0 L 70 4.0 L 80 12.0 L 90 7.0 L 100 5.0 V 0 H 0 Z"
                     />
                 </g>
             </svg>
 
-            <svg width="200" height="200" viewbox="0 0 140 16" preserveAspectRatio="none">
+            <svg id="areaChartB" width="200" height="200" viewbox="0 0 140 16" preserveAspectRatio="none">
                 <g transform="translate(0, 15) scale(1, -1)">
                     <path d="M 0 8.04 L 10 6.95 L 20 7.58 L 30 8.81 L 40 8.33 L 50 9.96 L 60 7.24 L 70 4.26 L 80 10.84 L 90 4.82 L 100 5.68 V 0 H 0 Z">
                 </g>
             </svg>
         </div>
 
-        <div>
+        <div class="scatterplot">
             <h2>Scatterplot</h2>
 
-            <svg width="200 " height="200 " viewbox="0 0 16 16" preserveAspectRatio="none">
+            <svg id="scatterplotChart" width="200 " height="200 " viewbox="0 0 16 16" preserveAspectRatio="none">
                 <g transform="translate(0, 15) scale(1, -1)">
                     <circle cx="10.0" cy="8.04" r="0.5" />
                     <circle cx="8.0" cy="6.95" r="0.5" />
