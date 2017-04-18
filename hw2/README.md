@@ -11,6 +11,8 @@ To run the application a web server is need, it's possible to run the command
 or, if docker is installed, the command
 
     docker-compose up -d
+    
+Then the application will be accessible at http://localhost:8080
 
 ## Members of the group
 
