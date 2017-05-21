@@ -59,7 +59,7 @@ The visualization will be made using an area map and possibly a tree map or a ba
 
 ---
 
-### 2 - Mockup
+### 2 Regional Data - Mockup
 
 ![App2 Mockup](project/img/app2mockup.png)
 
