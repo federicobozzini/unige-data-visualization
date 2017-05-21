@@ -8,54 +8,65 @@
 
 ---
 
-### What
+### The Applications
 
-We will explore 3 aspects of the Italian job market:
+We will build 2 applications to explore different aspects of the Italian job market:
 
-1. How the gender balance evolved during the years
-2. How the job market was influenced by the structural reforms, governments and other external factors
-3. The number of hirings in the Italian regions during the years
-
----
-
-### 1 - Gender Balance
-
-We will explore how the number of males and females active in the job market evolved during the years from 1959 to 2015 using the ISTAT dataset. It will be possible to explore the data in both absolute and relative terms.
+1. How the italian job market and its gender balance evolved during the years and how it was influenced by the structural reforms, governments and other external factors
+2. How the number of new hirings and the voucher usage changes relatively to the Italian regions and how it evolved during the years
 
 ---
 
-#### 1 - Implementation Idea
+### 1 Gender Balance - WHAT
 
-The visualization can be made with a stacked area chart and the interactivity can be managed with some combo box to select which data to show and whether to show absolute or relative data.
-
----
-
-### 2 - External Factors
-
-We will cross the occupational data (employment level, unemployment level from the ISTAT dataset) with external events like structural reform and government changes. There should be an evidence of if and how the events influenced the job market.
+The main data source of our application will be the ISTAT dataset regarding the activity rate, employment rate and unemployment rate during the years ranging from 1959 to 2015. We will especially focus on the gender balance during the years and we will integrate the original data with the datasets of the external factors that may have influenced the job market (eg: government changes, structural reforms).
 
 ---
 
-#### 2 - Implementation Idea
+### 1 Gender Balance - WHY
 
-The visualization can be made with a line chart, where the visualization is divided in areas with different colors, each one representing the time frame between different events.
-
----
-
-### 3 - Hirings, regional data
-
-We will show how many hirings relative to the population there have been in every Italian region. We will use the dataset of the hirings per region (ISTAT dataset) and an external dataset for the population by region.
+The main goals of the visualization will be to let the users explore the trends during the years. They will be able to focus on some specific trend (eg: umemployment rate, activity rate). They will be also able to visualize the data both in absolute and relative  (between the 2 genders) terms and cross the data with the other datasets regarding the external factors.
 
 ---
 
-#### 3 - Implementation Idea
+### 1 Gender Balance - HOW
 
-The visualization can be made with an area map, using a slider to select the year considered. An additional tree map may be added to visualize the absolute data.
+The visualization will be made with a stacked area chart and the interactivity will be managed with some combo boxes and radio buttons that will allow the users to select which trends to show, whether to show absolute or relative data and which external factor to consider.
+
+---
+
+### 1 Gender Balance - Mockup
+
+![App1 Mockup](img/app1mockup.png)
+
+---
+
+### 2 Regional Data - WHAT
+
+In this application we will focus on the Italian regional data compiled by ISTAT, from year 2013 to year 2015. Our main sources will be the datasets of the new hirings and of the voucher usage. We will also integrate these data with another dataset of the Italian regional population.
+
+---
+
+### 2 Regional Data - WHY
+
+The main goal of this application will be to offer the users some insight on the regional data of the new hirings and the voucher usage. The users will be able to select which dataset to visualize and whether to visualize the absolute data or the data weighted by population.
+
+---
+
+#### 2 Regional Data - HOW
+
+The visualization will be made using an area map and possibly a tree map or a bar chart. The interactivity will be managed with radio buttons, select boxes and combo boxes that will allow the users to select which dataset and year to visualize.
+
+---
+
+### 2 - Mockup
+
+![App2 Mockup](img/app2mockup.png)
 
 ---
 
 ## The End
 
-**Thank you!!**
+**Thank you!**
 
 Questions?
