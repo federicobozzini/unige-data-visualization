@@ -37,7 +37,7 @@ The visualization will be made with a stacked area chart and the interactivity w
 
 ### 1 Gender Balance - Mockup
 
-![App1 Mockup](img/app1mockup.png)
+![App1 Mockup](project/img/app1mockup.png)
 
 ---
 
@@ -61,7 +61,7 @@ The visualization will be made using an area map and possibly a tree map or a ba
 
 ### 2 - Mockup
 
-![App2 Mockup](img/app2mockup.png)
+![App2 Mockup](project/img/app2mockup.png)
 
 ---
 
