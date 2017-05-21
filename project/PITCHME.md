@@ -53,7 +53,7 @@ The main goal of this application will be to offer the users some insight on the
 
 ---
 
-#### 2 Regional Data - HOW
+### 2 Regional Data - HOW
 
 The visualization will be made using an area map and possibly a tree map or a bar chart. The interactivity will be managed with radio buttons, select boxes and combo boxes that will allow the users to select which dataset and year to visualize.
 
