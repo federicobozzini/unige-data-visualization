@@ -10,7 +10,7 @@ var projection;
  */
 function createBarChart(selectedDimension) {
 
-    var svgBounds = d3.select("#barChart").node().getBoundingClientRect(),
+    var svgBounds = d3.select("#barChart").node().getBoundingClientRect();
     var xpad = 100;
     var ypad = 70;
 
