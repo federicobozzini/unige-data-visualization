@@ -9,15 +9,29 @@ var projection;
  * @param selectedDimension a string specifying which dimension to render in the bar chart
  */
 function createBarChart(selectedDimension) {
+    const data = allWorldCupData.map(row => row[selectedDimension]).reverse();
+    const n = data.length;
 
-    var svgBounds = d3.select("#barChart").node().getBoundingClientRect();
-    var xpad = 100;
-    var ypad = 70;
+    const svgBounds = d3.select("#barChart").node().getBoundingClientRect();
+    const xpad = 100;
+    const ypad = 70;
+    const H = svgBounds.height;
+    const W = svgBounds.width;
+    const BAR_MARGIN = 1;
 
     // ******* TODO: PART I *******
 
     // Create the x and y scales; make
     // sure to leave room for the axes
+    const yMax = Math.max(...data);
+
+    const yScale = d3.scaleLinear()
+        .domain([0, yMax])
+        .range([0, H]);
+
+    const iScale = d3.scaleLinear()
+        .domain([0, n])
+        .range([0, W]);
 
     // Create colorScale
 
@@ -25,6 +39,21 @@ function createBarChart(selectedDimension) {
 
     // Create the bars (hint: use #bars)
 
+    const bars = d3.select("#bars")
+        .selectAll("rect")
+        .data(data);
+        
+    bars.enter()
+        .append('rect')
+        .attr('width', d => W/n - 2*BAR_MARGIN)
+        .attr('height', d => yScale(d))
+        .attr('y', (d, i) => H - yScale(d))
+        .attr('x', (d, i) => iScale(i)+BAR_MARGIN);
+    
+    bars.attr("height", d => yScale(d))
+        .attr('y', (d, i) => H - yScale(d));
+
+    bars.exit().remove();
 
 
     // ******* TODO: PART II *******
@@ -48,11 +77,11 @@ function createBarChart(selectedDimension) {
 function chooseData(v) {
 
     console.log(v);
-    
+
     // ******* TODO: PART I *******
     // Change the selected data when a user selects a different
     // menu item from the drop down.
-
+    createBarChart(v);
 }
 
 /**
@@ -151,9 +180,9 @@ function updateMap(worldcupData) {
 //Load in json data to make map
 
 d3.json("data/world.json", function (error, world) {
-    if (error) { 
+    if (error) {
         console.log(error);  //Log the error.
-	throw error;
+        throw error;
     }
 
     drawMap(world);
@@ -162,9 +191,9 @@ d3.json("data/world.json", function (error, world) {
 
 // Load CSV file
 d3.csv("data/fifa-world-cup.csv", function (error, csv) {
-    if (error) { 
+    if (error) {
         console.log(error);  //Log the error.
-	throw error;
+        throw error;
     }
 
     csv.forEach(function (d) {
