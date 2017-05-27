@@ -50,7 +50,10 @@ function createBarChart(selectedDimension) {
         .attr('y', (d, i) => H - yScale(d))
         .attr('x', (d, i) => iScale(i)+BAR_MARGIN);
     
-    bars.attr("height", d => yScale(d))
+    bars.transition()
+        .duration(600)
+        .ease(d3.easeQuad)
+        .attr("height", d => yScale(d))
         .attr('y', (d, i) => H - yScale(d));
 
     bars.exit().remove();
