@@ -35,6 +35,13 @@ function createBarChart(selectedDimension) {
 
     // Create colorScale
 
+    const lightBlue = "#C0D9D9";
+    const darkBlue = "#003F87";
+
+    const colorScale = d3.scaleLinear()
+        .domain([0, yMax])
+        .range([lightBlue, darkBlue]);
+
     // Create the axes (hint: use #xAxis and #yAxis)
 
     // Create the bars (hint: use #bars)
@@ -48,13 +55,15 @@ function createBarChart(selectedDimension) {
         .attr('width', d => W/n - 2*BAR_MARGIN)
         .attr('height', d => yScale(d))
         .attr('y', (d, i) => H - yScale(d))
-        .attr('x', (d, i) => iScale(i)+BAR_MARGIN);
+        .attr('x', (d, i) => iScale(i)+BAR_MARGIN)
+        .attr('fill', (d, i) => colorScale(d));
     
     bars.transition()
         .duration(600)
         .ease(d3.easeQuad)
         .attr("height", d => yScale(d))
-        .attr('y', (d, i) => H - yScale(d));
+        .attr('y', (d, i) => H - yScale(d))
+        .attr('fill', (d, i) => colorScale(d));
 
     bars.exit().remove();
 
