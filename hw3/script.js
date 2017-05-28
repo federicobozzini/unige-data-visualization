@@ -17,9 +17,10 @@ function createBarChart(selectedDimension) {
     const xpad = 100;
     const ypad = 70;
     const heigth = svgBounds.height;
-    const W = svgBounds.width;
+    const width = svgBounds.width;
     const BAR_MARGIN = 1;
     const H = heigth - ypad;
+    const W = width - xpad;
     const barWidth = W/n - 2*BAR_MARGIN;
 
     // ******* TODO: PART I *******
@@ -30,7 +31,7 @@ function createBarChart(selectedDimension) {
 
     const yScale = d3.scaleLinear()
         .domain([0, yMax])
-        .range([0, H]);
+        .range([H, 0]);
 
     const xScale = d3.scaleBand()
         .domain(years)
@@ -53,9 +54,10 @@ function createBarChart(selectedDimension) {
     const xAxis = d3.axisBottom(xScale)
         .ticks(n);
 
-    const ticks=d3.select("#xAxis")
-        .attr("class", "axis")
-        .attr("transform", "translate(0," + H + ")")
+    const yAxis = d3.axisLeft(yScale);
+
+    d3.select("#xAxis")
+        .attr("transform", `translate(${xpad},${H})`)
         .call(xAxis)
         .selectAll('text')
         .attr("transform", "rotate(270)")
@@ -63,25 +65,30 @@ function createBarChart(selectedDimension) {
         .attr('dy',- barWidth/4)
         .style("text-anchor", "start");
 
+    d3.select('#yAxis')
+        .attr("transform", `translate(${xpad},0)`)
+        .call(yAxis);
+
     // Create the bars (hint: use #bars)
 
     const bars = d3.select("#bars")
+        .attr("transform", `translate(${xpad},0)`)
         .selectAll("rect")
         .data(data);
         
     bars.enter()
         .append('rect')
         .attr('width', barWidth)
-        .attr('height', d => yScale(d[selectedDimension]))
-        .attr('y', (d, i) => H - yScale(d[selectedDimension]))
+        .attr('height', d => H - yScale(d[selectedDimension]))
+        .attr('y', (d, i) => yScale(d[selectedDimension]))
         .attr('x', (d, i) => xScale(d.YEAR)+BAR_MARGIN)
         .attr('fill', (d, i) => colorScale(d[selectedDimension]));
     
     bars.transition()
         .duration(600)
         .ease(d3.easeQuad)
-        .attr("height", d => yScale(d[selectedDimension]))
-        .attr('y', (d, i) => H - yScale(d[selectedDimension]))
+        .attr("height", d => H - yScale(d[selectedDimension]))
+        .attr('y', (d, i) => yScale(d[selectedDimension]))
         .attr('fill', (d, i) => colorScale(d[selectedDimension]));
 
     bars.exit().remove();
