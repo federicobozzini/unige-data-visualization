@@ -9,28 +9,31 @@ var projection;
  * @param selectedDimension a string specifying which dimension to render in the bar chart
  */
 function createBarChart(selectedDimension) {
-    const data = allWorldCupData.map(row => row[selectedDimension]).reverse();
+    const data = allWorldCupData.sort((d1, d2) => d1.YEAR - d2.YEAR);
+    const years = data.map(row => +row.YEAR);
     const n = data.length;
 
     const svgBounds = d3.select("#barChart").node().getBoundingClientRect();
     const xpad = 100;
     const ypad = 70;
-    const H = svgBounds.height;
+    const heigth = svgBounds.height;
     const W = svgBounds.width;
     const BAR_MARGIN = 1;
+    const H = heigth - ypad;
+    const barWidth = W/n - 2*BAR_MARGIN;
 
     // ******* TODO: PART I *******
 
     // Create the x and y scales; make
     // sure to leave room for the axes
-    const yMax = Math.max(...data);
+    const yMax = d3.max(data, d=> d[selectedDimension]);
 
     const yScale = d3.scaleLinear()
         .domain([0, yMax])
         .range([0, H]);
 
-    const iScale = d3.scaleLinear()
-        .domain([0, n])
+    const xScale = d3.scaleBand()
+        .domain(years)
         .range([0, W]);
 
     // Create colorScale
@@ -44,6 +47,22 @@ function createBarChart(selectedDimension) {
 
     // Create the axes (hint: use #xAxis and #yAxis)
 
+    //magic constant, ugh!
+    const labelLength = 42;
+
+    const xAxis = d3.axisBottom(xScale)
+        .ticks(n);
+
+    const ticks=d3.select("#xAxis")
+        .attr("class", "axis")
+        .attr("transform", "translate(0," + H + ")")
+        .call(xAxis)
+        .selectAll('text')
+        .attr("transform", "rotate(270)")
+        .attr('dx',-labelLength)
+        .attr('dy',- barWidth/4)
+        .style("text-anchor", "start");
+
     // Create the bars (hint: use #bars)
 
     const bars = d3.select("#bars")
@@ -52,18 +71,18 @@ function createBarChart(selectedDimension) {
         
     bars.enter()
         .append('rect')
-        .attr('width', d => W/n - 2*BAR_MARGIN)
-        .attr('height', d => yScale(d))
-        .attr('y', (d, i) => H - yScale(d))
-        .attr('x', (d, i) => iScale(i)+BAR_MARGIN)
-        .attr('fill', (d, i) => colorScale(d));
+        .attr('width', barWidth)
+        .attr('height', d => yScale(d[selectedDimension]))
+        .attr('y', (d, i) => H - yScale(d[selectedDimension]))
+        .attr('x', (d, i) => xScale(d.YEAR)+BAR_MARGIN)
+        .attr('fill', (d, i) => colorScale(d[selectedDimension]));
     
     bars.transition()
         .duration(600)
         .ease(d3.easeQuad)
-        .attr("height", d => yScale(d))
-        .attr('y', (d, i) => H - yScale(d))
-        .attr('fill', (d, i) => colorScale(d));
+        .attr("height", d => yScale(d[selectedDimension]))
+        .attr('y', (d, i) => H - yScale(d[selectedDimension]))
+        .attr('fill', (d, i) => colorScale(d[selectedDimension]));
 
     bars.exit().remove();
 
