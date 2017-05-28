@@ -67,6 +67,9 @@ function createBarChart(selectedDimension) {
 
     d3.select('#yAxis')
         .attr("transform", `translate(${xpad},0)`)
+        .transition()
+        .duration(600)
+        .ease(d3.easeQuad)
         .call(yAxis);
 
     // Create the bars (hint: use #bars)
