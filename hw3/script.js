@@ -22,6 +22,7 @@ function createBarChart(selectedDimension) {
     const H = heigth - ypad;
     const W = width - xpad;
     const barWidth = W/n - 2*BAR_MARGIN;
+    const transitionDuration = 600;
 
     // ******* TODO: PART I *******
 
@@ -68,7 +69,7 @@ function createBarChart(selectedDimension) {
     d3.select('#yAxis')
         .attr("transform", `translate(${xpad},0)`)
         .transition()
-        .duration(600)
+        .duration(transitionDuration)
         .ease(d3.easeQuad)
         .call(yAxis);
 
@@ -88,7 +89,7 @@ function createBarChart(selectedDimension) {
         .attr('fill', (d, i) => colorScale(d[selectedDimension]));
     
     bars.transition()
-        .duration(600)
+        .duration(transitionDuration)
         .ease(d3.easeQuad)
         .attr("height", d => H - yScale(d[selectedDimension]))
         .attr('y', (d, i) => yScale(d[selectedDimension]))
