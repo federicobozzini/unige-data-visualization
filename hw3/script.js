@@ -107,6 +107,15 @@ function createBarChart(selectedDimension) {
     // Call the necessary update functions for when a user clicks on a bar.
     // Note: think about what you want to update when a different bar is selected.
 
+    bars.on('click', function(d, i) {
+        bars
+            .attr('fill', (d, i) => colorScale(d[selectedDimension]));
+        d3.select(this)
+            .attr('fill', 'red');
+
+        updateInfo(d);
+        updateMap(d);
+    });
 
 }
 
@@ -140,7 +149,7 @@ function updateInfo(oneWorldCup) {
 
     // Hint: For the list of teams, you can create an list element for each team.
     // Hint: Select the appropriate ids to update the text content.
-
+    console.log('updateInfo');
 
 }
 
@@ -191,6 +200,7 @@ function clearMap() {
  * @param the data for one specific world cup
  */
 function updateMap(worldcupData) {
+    console.log('updateMap');
 
     //Clear any previous selections;
     clearMap();
