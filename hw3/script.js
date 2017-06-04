@@ -84,16 +84,16 @@ function createBarChart(selectedDimension) {
         .append('rect')
         .attr('width', barWidth)
         .attr('height', d => H - yScale(d[selectedDimension]))
-        .attr('y', (d, i) => yScale(d[selectedDimension]))
-        .attr('x', (d, i) => xScale(d.YEAR)+BAR_MARGIN)
-        .attr('fill', (d, i) => colorScale(d[selectedDimension]));
+        .attr('y', d => yScale(d[selectedDimension]))
+        .attr('x', d => xScale(d.YEAR)+BAR_MARGIN)
+        .attr('fill', d => colorScale(d[selectedDimension]));
     
     bars.transition()
         .duration(transitionDuration)
         .ease(d3.easeQuad)
         .attr("height", d => H - yScale(d[selectedDimension]))
-        .attr('y', (d, i) => yScale(d[selectedDimension]))
-        .attr('fill', (d, i) => colorScale(d[selectedDimension]));
+        .attr('y', d => yScale(d[selectedDimension]))
+        .attr('fill', d => colorScale(d[selectedDimension]));
 
     bars.exit().remove();
 
@@ -106,10 +106,13 @@ function createBarChart(selectedDimension) {
 
     // Call the necessary update functions for when a user clicks on a bar.
     // Note: think about what you want to update when a different bar is selected.
+    
+    const barsTmp = d3.select("#bars").selectAll("rect");
 
-    bars.on('click', function(d, i) {
-        bars
-            .attr('fill', (d, i) => colorScale(d[selectedDimension]));
+
+    barsTmp.on('click', function(d, i) {
+         barsTmp
+             .attr('fill', d => colorScale(d[selectedDimension]));
         d3.select(this)
             .attr('fill', 'red');
 
