@@ -153,9 +153,21 @@ function updateInfo(oneWorldCup) {
     // Hint: For the list of teams, you can create an list element for each team.
     // Hint: Select the appropriate ids to update the text content.
 
+    d3.select("#edition").data([oneWorldCup]).text(d => d.EDITION);
     d3.select("#host").data([oneWorldCup]).text(d => d.host);
     d3.select("#winner").data([oneWorldCup]).text(d => d.winner);
     d3.select("#silver").data([oneWorldCup]).text(d => d.runner_up);
+
+    if (d3.select('#teams').select('ul').empty())
+        d3.select('#teams').append('ul');
+    const teamList = d3.select("#teams")
+        .select('ul')
+        .selectAll('li')
+        .data(oneWorldCup.teams_names);
+
+    teamList.text(d => d);
+    teamList.enter().append('li').text(d => d);
+    teamList.exit().remove();
 
 }
 
