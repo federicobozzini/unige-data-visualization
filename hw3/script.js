@@ -152,7 +152,10 @@ function updateInfo(oneWorldCup) {
 
     // Hint: For the list of teams, you can create an list element for each team.
     // Hint: Select the appropriate ids to update the text content.
-    console.log('updateInfo');
+
+    d3.select("#host").data([oneWorldCup]).text(d => d.host);
+    d3.select("#winner").data([oneWorldCup]).text(d => d.winner);
+    d3.select("#silver").data([oneWorldCup]).text(d => d.runner_up);
 
 }
 
