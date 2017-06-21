@@ -195,7 +195,7 @@ function drawMap(world) {
     // Make sure and add gridlines to the map
 
     var topology = topojson.feature(world, world.objects.countries).features;
-
+    
     const countries = d3.select('#map')
         .insert('g')
         .selectAll(".countries")
@@ -204,6 +204,7 @@ function drawMap(world) {
     countries.enter()
         .insert("path")
         .attr("class", "countries")
+        .attr("id", d => d.id)
         .attr("d", path);
 
     d3.select('#map')
