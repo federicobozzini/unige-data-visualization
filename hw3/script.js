@@ -195,9 +195,8 @@ function drawMap(world) {
     // Make sure and add gridlines to the map
 
     var topology = topojson.feature(world, world.objects.countries).features;
-    
+
     const countries = d3.select('#map')
-        .insert('g')
         .selectAll(".countries")
         .data(topology);
 
@@ -207,8 +206,9 @@ function drawMap(world) {
         .attr("id", d => d.id)
         .attr("d", path);
 
-    d3.select('#map')
+    d3.select('#mapcontainer')
         .insert('g')
+        .attr("id", "graticule")
         .selectAll('.grat')
         .data([graticule()])
         .enter()
@@ -265,9 +265,7 @@ function updateMap(worldcupData) {
     //Iterate through all participating teams and change their color as well.
 
     //We strongly suggest using classes to style the selected countries.
-
-
-
+    
 }
 
 /* DATA LOADING */
