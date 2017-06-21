@@ -43,6 +43,7 @@
     stroke: grey;
     stroke-width: 1px;
     opacity: .2;
+    fill: white;
 }
 
 @font-face {
