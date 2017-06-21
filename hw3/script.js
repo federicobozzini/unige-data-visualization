@@ -197,6 +197,7 @@ function drawMap(world) {
     var topology = topojson.feature(world, world.objects.countries).features;
 
     const countries = d3.select('#map')
+        .insert('g')
         .selectAll(".countries")
         .data(topology);
 
