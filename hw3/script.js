@@ -239,6 +239,7 @@ function clearMap() {
     //d3 selection and .classed to set these classes on and off here.
 
     d3.select('.host').classed('host', false);
+    d3.select('#points').selectAll('circle').remove();
 
 }
 
@@ -268,8 +269,32 @@ function updateMap(worldcupData) {
 
     //We strongly suggest using classes to style the selected countries.
 
-
     d3.select("#" + worldcupData.host_country_code).classed('host', true);
+
+    const winProjection = projection([worldcupData.WIN_LON, worldcupData.WIN_LAT]);
+    const winCoordinates = {
+        lon: winProjection[0],
+        lat: winProjection[1],
+        class: 'gold'
+    };
+    const rupProjection = projection([worldcupData.RUP_LON, worldcupData.RUP_LAT]);
+    const rupCoordinates = {
+        lon: rupProjection[0],
+        lat: rupProjection[1],
+        class: 'silver'
+    };
+    const markerCoordinates = [winCoordinates, rupCoordinates];
+    const markerSize = 6;
+
+    d3.select('#points')
+        .selectAll("circle")
+        .data(markerCoordinates)
+        .enter()
+        .append("circle")
+        .attr('class', d => d.class)
+        .attr('r', markerSize)
+        .attr('cx', d => d.lon)
+        .attr('cy', d => d.lat);
 
 }
 
