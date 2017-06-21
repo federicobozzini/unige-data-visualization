@@ -194,11 +194,17 @@ function drawMap(world) {
     // Draw the background (country outlines; hint: use #map)
     // Make sure and add gridlines to the map
 
+    // Hint: assign an id to each country path to make it easier to select afterwards
+    // we suggest you use the variable in the data element's .id field to set the id
+
+    // Make sure and give your paths the appropriate class (see the .css selectors at
+    // the top of the provided html file)
+
     var topology = topojson.feature(world, world.objects.countries).features;
 
     const countries = d3.select('#map')
         .selectAll(".countries")
-        .data(topology);
+        .data(topology, d => d.id);
 
     countries.enter()
         .insert("path")
@@ -216,13 +222,6 @@ function drawMap(world) {
         .attr('class', 'grat')
         .attr('d', path);
 
-    // Hint: assign an id to each country path to make it easier to select afterwards
-    // we suggest you use the variable in the data element's .id field to set the id
-
-    // Make sure and give your paths the appropriate class (see the .css selectors at
-    // the top of the provided html file)
-
-
 }
 
 /**
@@ -238,8 +237,9 @@ function clearMap() {
     //the colors and markers for hosts/teams/winners, you can use
     //d3 selection and .classed to set these classes on and off here.
 
-    d3.select('.host').classed('host', false);
+    d3.select('#map').select('.host').classed('host', false);
     d3.select('#points').selectAll('circle').remove();
+    d3.select('#map').selectAll('.team').classed('team', false).classed('countries', true);
 
 }
 
@@ -249,7 +249,6 @@ function clearMap() {
  * @param the data for one specific world cup
  */
 function updateMap(worldcupData) {
-    console.log('updateMap');
 
     //Clear any previous selections;
     clearMap();
@@ -268,8 +267,6 @@ function updateMap(worldcupData) {
     //Iterate through all participating teams and change their color as well.
 
     //We strongly suggest using classes to style the selected countries.
-
-    d3.select("#" + worldcupData.host_country_code).classed('host', true);
 
     const winProjection = projection([worldcupData.WIN_LON, worldcupData.WIN_LAT]);
     const winCoordinates = {
@@ -295,6 +292,13 @@ function updateMap(worldcupData) {
         .attr('r', markerSize)
         .attr('cx', d => d.lon)
         .attr('cy', d => d.lat);
+
+    d3.select('#map')
+        .selectAll('.countries')
+        .data(worldcupData.teams_iso, d => d.id ? d.id : d)
+        .attr('class', 'team');
+
+    d3.select("#" + worldcupData.host_country_code).classed('host', true);
 
 }
 
