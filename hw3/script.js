@@ -238,6 +238,8 @@ function clearMap() {
     //the colors and markers for hosts/teams/winners, you can use
     //d3 selection and .classed to set these classes on and off here.
 
+    d3.select('.host').classed('host', false);
+
 }
 
 
@@ -265,7 +267,10 @@ function updateMap(worldcupData) {
     //Iterate through all participating teams and change their color as well.
 
     //We strongly suggest using classes to style the selected countries.
-    
+
+
+    d3.select("#" + worldcupData.host_country_code).classed('host', true);
+
 }
 
 /* DATA LOADING */
