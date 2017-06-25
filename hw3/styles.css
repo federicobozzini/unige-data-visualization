@@ -148,6 +148,7 @@ header {
 div {
     display: inline-block;
     margin: 10px;
+    vertical-align: top;
 }
 
 /*div,*/
@@ -167,7 +168,7 @@ div {
 
 #details > div {
     vertical-align: top;
-    min-height: 320px;
+    min-height: 390px;
     min-width: 200px;
 }
 
@@ -177,4 +178,12 @@ div {
 
 #teams li {
     margin-left: 10px;
+}
+
+#years ul svg {
+    vertical-align: bottom;
+}
+
+#graticule, #points {
+    pointer-events: none;
 }

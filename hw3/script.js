@@ -202,11 +202,10 @@ function drawMap(world) {
 
     var topology = topojson.feature(world, world.objects.countries).features;
 
-    const countries = d3.select('#map')
+    d3.select('#map')
         .selectAll(".countries")
-        .data(topology, d => d.id);
-
-    countries.enter()
+        .data(topology, d => d.id)
+        .enter()
         .insert("path")
         .attr("class", "countries")
         .attr("id", d => d.id)
@@ -221,6 +220,60 @@ function drawMap(world) {
         .insert('path')
         .attr('class', 'grat')
         .attr('d', path);
+
+    d3.select('#mapcontainer')
+        .selectAll(".countries")
+        .on('click', d => {
+            if (d3.select('body').select('#years').empty()) {
+                const yearsEl = d3.select('body')
+                .append('div')
+                .attr('id', 'years');
+
+                yearsEl.append('h3');
+                yearsEl.append('ul');
+            }
+
+            const countryIso = d.id ? d.id : d;
+            
+            const yearsData = allWorldCupData
+                        .filter(worldCup => worldCup.teams_iso.includes(countryIso))
+                        .map(worldCup => {
+                            // this selection is not correct because the property teams_iso and teams_names are not synchronized. It's more like a proof of concept.
+                            const countryPosition = worldCup.teams_iso.findIndex(c => c === countryIso);
+                            const countryName = worldCup.teams_names[countryPosition];
+                            const winner = countryName === worldCup.winner;
+                            const runnerUp = countryName === worldCup.runner_up;
+                            return {
+                                year: worldCup.year,
+                                winner,
+                                runnerUp
+                            };
+                        });
+
+            d3.select("#years").select('h3').text(countryIso);
+
+            d3.select("#years")
+                .select('ul')
+                .selectAll('li')
+                .data(yearsData)
+                .select("span")
+                .text(d => d.year + (d.winner ? ' (winner)' : '') + (d.runnerUp ? ' (runner up)' : ''));
+            
+            d3.select("#years")
+                .select('ul')
+                .selectAll('li')
+                .data(yearsData)
+                .enter()
+                .append('li')
+                .append("span")
+                .text(d => d.year + (d.winner ? ' (winner)' : '') + (d.runnerUp ? ' (runner up)' : ''));
+            
+            d3.select("#years")
+                .select('ul')
+                .selectAll('li')
+                .data(yearsData).exit().remove();
+
+    });
 
 }
 
@@ -296,6 +349,7 @@ function updateMap(worldcupData) {
     d3.select('#map')
         .selectAll('.countries')
         .data(worldcupData.teams_iso, d => d.id ? d.id : d)
+        .attr('id', d => d)
         .attr('class', 'team');
 
     d3.select("#" + worldcupData.host_country_code).classed('host', true);
