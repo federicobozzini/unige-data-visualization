@@ -1,3 +1,5 @@
+'use strict';
+
 // Global var for FIFA world cup data
 var allWorldCupData;
 var projection;
@@ -234,7 +236,7 @@ function drawMap(world) {
             }
 
             const countryIso = d.id ? d.id : d;
-            
+
             const yearsData = allWorldCupData
                         .filter(worldCup => worldCup.teams_iso.includes(countryIso))
                         .map(worldCup => {
