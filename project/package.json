@@ -1,0 +1,23 @@
+{
+  "name": "unige-data-visulization-project",
+  "version": "1.0.0",
+  "description": "Material for the [Data Visualization](http://computerscience.dibris.unige.it/course/dv/) course of the Master in CS of the University of Genoa, academic year 2016-2017",
+  "main": "extractData.js",
+  "scripts": {
+    "start": "node extractData",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iit-federico-bozzini/unige-data-visualization.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/iit-federico-bozzini/unige-data-visualization/issues"
+  },
+  "homepage": "https://github.com/iit-federico-bozzini/unige-data-visualization#readme",
+  "dependencies": {
+    "xlsx": "^0.10.6"
+  }
+}
