@@ -1,0 +1,23 @@
+/* App 1 */
+
+#app1 > div {
+    display: inline-block;
+    vertical-align: top;
+}
+
+#app1mainchart > svg  {
+    width: 800px;
+    height: 500px;
+}
+        
+.male {
+    stroke: none;
+    fill: steelblue
+}
+
+.female {
+    stroke: none;
+    fill: pink;
+}
+
+/* App 2 */
