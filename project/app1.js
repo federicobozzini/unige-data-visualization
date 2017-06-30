@@ -7,10 +7,32 @@ const app = {
                 throw error;
             }
 
-            app.drawCharts(jobMarketData);
+            const radioButtons = document.querySelectorAll('#app1controls input[type=radio]');
+
+            radioButtons.forEach(b => b.addEventListener('click', () => app.drawCharts()));
+
+            app.data = jobMarketData;
+            app.drawCharts();
         });
     },
-    drawCharts: function (jobMarketData) {
+    getOptions: function () {
+        function groupBy(xs, key) {
+            return xs.reduce(function (rv, x) {
+                (rv[x[key]] = rv[x[key]] || []).push(x);
+                return rv;
+            }, {});
+        };
+
+        const radioButtons = [...document.querySelectorAll('#app1controls input[type=radio]')];
+        const radioGroups = groupBy(radioButtons, 'name');
+        const options = {};
+        Object.keys(radioGroups).forEach(g => {
+            const selectedButton = radioGroups[g].find(b => b.checked);
+            options[selectedButton['name']] = selectedButton['value'];
+        });
+        return options;
+    },
+    drawCharts: function () {
         function getMaleWorkforce(r) {
             return population = r.maleOccupied + r.maleNotOccupied;
         }
@@ -47,13 +69,21 @@ const app = {
             const population = getPopulation(r);
             return workforce / population;
         }
+        function getRelativeMaleActivityRate(r) {
+            const maleActivityRate = getMaleActivityRate(r);
+            const activityRate = getActivityRate(r);
+            return maleActivityRate / activityRate;
+        }
+
+        const jobMarketData = app.data;
+        const options = app.getOptions();
         const n = jobMarketData.length;
         const minYear = d3.min(jobMarketData.map(r => r.year));
         const maxYear = d3.max(jobMarketData.map(r => r.year));
         const xpad = 100;
         const ypad = 70;
 
-        if (d3.select('#app1mainchart > svg').empty()) {
+        if (d3.select('#app1mainchart').select('svg').empty()) {
             const mainChart = d3.select('#app1mainchart').append('svg');
             mainChart
                 .append('g')
@@ -105,13 +135,18 @@ const app = {
         var maleAreaGenerator = d3.area()
             .x(d => xScale(d.year))
             .y0(yScale(0))
-            .y1(d => yScale(getMaleActivityRate(d)));
+            .y1(d => yScale(options.vistype == 'absolute' ? getMaleActivityRate(d) : getRelativeMaleActivityRate(d)));
 
         var femaleAreaGenerator = d3.area()
             .x(d => xScale(d.year))
-            .y0(d => yScale(getMaleActivityRate(d)))
-            .y1(d => yScale(getActivityRate(d)));
+            .y0(d => yScale(options.vistype == 'absolute' ? getMaleActivityRate(d) : getRelativeMaleActivityRate(d)))
+            .y1(d => yScale(options.vistype == 'absolute' ? getActivityRate(d) : 1));
 
+        d3.select("#app1mainchart")
+            .select('.chart')
+            .selectAll('path')
+            .remove();
+            
         d3.select("#app1mainchart")
             .select('.chart')
             .append("path")
@@ -127,4 +162,4 @@ const app = {
     }
 };
 
-app.init();
+window.addEventListener('load', () => app.init());

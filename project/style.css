@@ -9,6 +9,18 @@
     width: 800px;
     height: 500px;
 }
+
+#app1controls {
+    width: 200px;
+}
+
+#app1controls label {
+    display: block;
+}
+
+#app1controls > div {
+    margin-bottom: 20px;
+}
         
 .male {
     stroke: none;
