@@ -80,11 +80,11 @@ const app = {
         }
         function getMaleUnemploymentRate(r) {
             const workforce = getWorkforce(r)
-            return r.maleOccupied / workforce;
+            return r.maleNotOccupied / workforce;
         }
         function getFemaleUnemploymentRate(r) {
             const workforce = getWorkforce(r)
-            return r.femaleOccupied / workforce;
+            return r.femaleNotOccupied / workforce;
         }
 
         const rawData = app.data;
