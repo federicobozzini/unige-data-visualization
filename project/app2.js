@@ -42,7 +42,7 @@
         const map = d3.select('#app2-map').select('svg');
 
         const color = d3.scaleQuantize()
-            .domain([0, d3.max(currentData.slice(0, currentData.length - 2))])
+            .domain([0, removeTotal(currentData)])
             .range(["#ffffbf", "#d9ef8b", "#91cf60", "#1a9850"]);
 
         const projection = d3.geoMercator()
@@ -53,12 +53,16 @@
 
         const regions = map.selectAll(".region")
             .data(topoMap);
-        console.log(currentData);
+
         regions.enter()
             .insert("path")
             .attr("class", "region")
             .attr("d", path)
             .style("fill", d => color(currentData[d.properties.COD_REG - 1]));
+    }
+
+    function removeTotal(d) {
+        return d3.max(d.slice(0, d.length - 2));
     }
 
 })();

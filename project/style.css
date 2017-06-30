@@ -1,3 +1,38 @@
+/* App 1 */
+
+#app1 > div {
+    display: inline-block;
+    vertical-align: top;
+}
+
+#app1mainchart > svg  {
+    width: 800px;
+    height: 500px;
+}
+
+#app1controls {
+    width: 200px;
+}
+
+#app1controls label {
+    display: block;
+}
+
+#app1controls > div {
+    margin-bottom: 20px;
+}
+        
+.male {
+    stroke: none;
+    fill: steelblue
+}
+
+.female {
+    stroke: none;
+    fill: pink;
+}
+
+/* App 2 */
 path.region{
     stroke: #cecece;
 }
