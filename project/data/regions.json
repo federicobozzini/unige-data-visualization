@@ -1,0 +1,82 @@
+[
+    {
+        "COD_REG": 1,
+        "NOME_REG": "PIEMONTE"
+    },
+    {
+        "COD_REG": 2,
+        "NOME_REG": "VALLE D'AOSTA"
+    },
+    {
+        "COD_REG": 3,
+        "NOME_REG": "LOMBARDIA"
+    },
+    {
+        "COD_REG": 4,
+        "NOME_REG": "TRENTINO ALTO-ADIGE"
+    },
+    {
+        "COD_REG": 5,
+        "NOME_REG": "VENETO"
+    },
+    {
+        "COD_REG": 6,
+        "NOME_REG": "FRIULI-VENEZIA-GIULIA"
+    },
+    {
+        "COD_REG": 7,
+        "NOME_REG": "LIGURIA"
+    },
+    {
+        "COD_REG": 8,
+        "NOME_REG": "EMILIA-ROMAGNA"
+    },
+    {
+        "COD_REG": 9,
+        "NOME_REG": "TOSCANA"
+    },
+    {
+        "COD_REG": 10,
+        "NOME_REG": "UMBRIA"
+    },
+    {
+        "COD_REG": 11,
+        "NOME_REG": "MARCHE"
+    },
+    {
+        "COD_REG": 12,
+        "NOME_REG": "LAZIO"
+    },
+    {
+        "COD_REG": 13,
+        "NOME_REG": "ABRUZZO"
+    },
+    {
+        "COD_REG": 14,
+        "NOME_REG": "MOLISE"
+    },
+    {
+        "COD_REG": 15,
+        "NOME_REG": "CAMPANIA"
+    },
+    {
+        "COD_REG": 16,
+        "NOME_REG": "PUGLIA"
+    },
+    {
+        "COD_REG": 17,
+        "NOME_REG": "BASILICATA"
+    },
+    {
+        "COD_REG": 18,
+        "NOME_REG": "CALABRIA"
+    },
+    {
+        "COD_REG": 19,
+        "NOME_REG": "SICILIA"
+    },
+    {
+        "COD_REG": 20,
+        "NOME_REG": "SARDEGNA"
+    }
+]
