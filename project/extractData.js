@@ -2,8 +2,12 @@ const xlsx = require('xlsx');
 const fs = require('fs');
 
 function getNum(str) {
-    if (!str)
+    if (typeof str !== 'string') {
+        if (typeof str === 'number')
+            return str;
         return 0;
+    }
+
     return +str.replace(/\D+/g, '');
 }
 
@@ -31,16 +35,112 @@ function extractApp1Data() {
 
 
 function extractApp2Data() {
+    const regions = [
+        {
+            cod: 1,
+            name: "PIEMONTE"
+        },
+        {
+            cod: 2,
+            name: "VALLE D'AOSTA"
+        },
+        {
+            cod: 3,
+            name: "LOMBARDIA"
+        },
+        {
+            index: 4,
+            cod: 4,
+            name: "TRENTINO ALTO-ADIGE"
+        },
+        {
+            cod: 5,
+            name: "VENETO"
+        },
+        {
+            cod: 6,
+            name: "FRIULI-VENEZIA-GIULIA"
+        },
+        {
+            cod: 7,
+            name: "LIGURIA"
+        },
+        {
+            cod: 8,
+            name: "EMILIA-ROMAGNA"
+        },
+        {
+            cod: 9,
+            name: "TOSCANA"
+        },
+        {
+            cod: 10,
+            name: "UMBRIA"
+        },
+        {
+            cod: 11,
+            name: "MARCHE"
+        },
+        {
+            cod: 12,
+            name: "LAZIO"
+        },
+        {
+            cod: 13,
+            name: "ABRUZZO"
+        },
+        {
+            cod: 14,
+            name: "MOLISE"
+        },
+        {
+            cod: 15,
+            name: "CAMPANIA"
+        },
+        {
+            cod: 16,
+            name: "PUGLIA"
+        },
+        {
+            cod: 17,
+            name: "BASILICATA"
+        },
+        {
+            cod: 18,
+            name: "CALABRIA"
+        },
+        {
+            cod: 19,
+            name: "SICILIA"
+        },
+        {
+            cod: 20,
+            name: "SARDEGNA"
+        },
+        {
+            cod: 21,
+            name: "ITALIA"
+        }
+    ];
+
     const rawDataFilename = 'rawData/03_MINLAV, Avviamenti e cessazioni, Italia, 2013-2016 (elaborazioni).xlsx'
     const workbook = xlsx.readFile(rawDataFilename);
 
-    const startsXls = workbook.Sheets[workbook.SheetNames[0]]
+    const startsXls = workbook.Sheets[workbook.SheetNames[0]];
     const startsRaw = xlsx.utils.sheet_to_json(startsXls, { header: 1 });
-    const regions = startsRaw[0].slice(2, 23)
-    const starts = startsRaw.slice(43, 47).map(a => ({
-        year: getNum(a[0].replace('-TOT', '')),
-        data: a.slice(2, 23).map(n => getNum(n))
-    }));
+    const startsRawWithTrentino = startsRaw.map(
+        row => row.slice(0, 5)
+            .concat([getNum(row[5]) + getNum(row[6])])
+            .concat(row.slice(7))
+    );
+    const starts = startsRawWithTrentino.slice(43, 47).map(
+        row => ({
+            year: getNum(row[0].replace('-TOT', '')),
+            data: row.slice(2, 21)
+                .concat([row[23]])
+                .map(n => getNum(n))
+        })
+    );
 
     const voucherXls = workbook.Sheets[workbook.SheetNames[3]]
     const voucherRaw = xlsx.utils.sheet_to_json(voucherXls, { header: 1 });
