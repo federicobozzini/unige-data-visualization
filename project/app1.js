@@ -34,14 +34,17 @@ const app = {
     },
     drawCharts: function () {
         function getMaleWorkforce(r) {
-            return population = r.maleOccupied + r.maleNotOccupied;
+            return r.maleOccupied + r.maleNotOccupied;
+        }
+        function getFemaleWorkforce(r) {
+            return r.femaleOccupied + r.femaleNotOccupied;
+        }
+        function getWorkforce(r) {
+            return getMaleWorkforce(r) + getFemaleWorkforce(r);
         }
         function getMalePopulation(r) {
             const maleWorkforce = getMaleWorkforce(r);
             return population = maleWorkforce + r.maleNotWorkforce;
-        }
-        function getFemaleWorkforce(r) {
-            return population = r.femaleOccupied + r.femaleNotOccupied;
         }
         function getFemalePopulation(r) {
             const femaleWorkforce = getFemaleWorkforce(r);
@@ -62,21 +65,47 @@ const app = {
             const population = getPopulation(r)
             return femaleWorkforce / population;
         }
-        function getActivityRate(r) {
-            const maleWorkforce = getMaleWorkforce(r);
-            const femaleWorkforce = getFemaleWorkforce(r);
-            const workforce = maleWorkforce + femaleWorkforce;
-            const population = getPopulation(r);
-            return workforce / population;
-        }
         function getRelativeMaleActivityRate(r) {
             const maleActivityRate = getMaleActivityRate(r);
             const activityRate = getActivityRate(r);
             return maleActivityRate / activityRate;
         }
+        function getMaleEmploymentRate(r) {
+            const population = getPopulation(r)
+            return r.maleOccupied / population;
+        }
+        function getFemaleEmploymentRate(r) {
+            const population = getPopulation(r)
+            return r.femaleOccupied / population;
+        }
+        function getMaleUnemploymentRate(r) {
+            const workforce = getWorkforce(r)
+            return r.maleOccupied / workforce;
+        }
+        function getFemaleUnemploymentRate(r) {
+            const workforce = getWorkforce(r)
+            return r.femaleOccupied / workforce;
+        }
 
-        const jobMarketData = app.data;
+        const rawData = app.data;
+        const jobMarketData = rawData.map(r => ({
+            year: r.year,
+            activityRate: {
+                male: getMaleActivityRate(r),
+                female: getFemaleActivityRate(r)
+            },
+            employmentRate: {
+                male: getMaleEmploymentRate(r),
+                female: getFemaleEmploymentRate(r)
+            },
+            unemploymentRate: {
+                male: getMaleUnemploymentRate(r),
+                female: getFemaleUnemploymentRate(r)
+            }
+        }));
+
         const options = app.getOptions();
+        const f = options.maindata;
         const n = jobMarketData.length;
         const minYear = d3.min(jobMarketData.map(r => r.year));
         const maxYear = d3.max(jobMarketData.map(r => r.year));
@@ -135,18 +164,19 @@ const app = {
         var maleAreaGenerator = d3.area()
             .x(d => xScale(d.year))
             .y0(yScale(0))
-            .y1(d => yScale(options.vistype == 'absolute' ? getMaleActivityRate(d) : getRelativeMaleActivityRate(d)));
+            .y1(d => yScale(options.vistype == 'absolute' ? d[f].male : (d[f].male + d[f].female)));
+
 
         var femaleAreaGenerator = d3.area()
             .x(d => xScale(d.year))
-            .y0(d => yScale(options.vistype == 'absolute' ? getMaleActivityRate(d) : getRelativeMaleActivityRate(d)))
-            .y1(d => yScale(options.vistype == 'absolute' ? getActivityRate(d) : 1));
+            .y0(d => yScale(options.vistype == 'absolute' ? d[f].male : (d[f].male + d[f].female)))
+            .y1(d => yScale(options.vistype == 'absolute' ? d[f].male + d[f].female : 1));
 
         d3.select("#app1mainchart")
             .select('.chart')
             .selectAll('path')
             .remove();
-            
+
         d3.select("#app1mainchart")
             .select('.chart')
             .append("path")
