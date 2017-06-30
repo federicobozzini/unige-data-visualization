@@ -29,6 +29,8 @@ const app = {
         Object.keys(radioGroups).forEach(g => {
             const selectedButton = radioGroups[g].find(b => b.checked);
             options[selectedButton['name']] = selectedButton['value'];
+            const dataset = selectedButton.dataset;
+            Object.keys(dataset).forEach(d => options[d] = dataset[d]);
         });
         return options;
     },
@@ -102,6 +104,8 @@ const app = {
         const options = app.getOptions();
         const f = options.maindata;
         const isAbsolute = options.vistype == 'absolute';
+        const gender = options.gender || 'male';
+        const otherGender = gender == 'female' ? 'male' : 'female';
         const n = jobMarketData.length;
         const minYear = d3.min(jobMarketData.map(r => r.year));
         const maxYear = d3.max(jobMarketData.map(r => r.year));
@@ -157,15 +161,15 @@ const app = {
             .ease(d3.easeQuad)
             .call(yAxis);
 
-        var maleAreaGenerator = d3.area()
+        var firstAreaGenerator = d3.area()
             .x(d => xScale(d.year))
             .y0(yScale(0))
-            .y1(d => yScale(isAbsolute ? d[f].male : d[f].male / (d[f].male + d[f].female)));
+            .y1(d => yScale(isAbsolute ? d[f][gender] : d[f].male / (d[f].male + d[f].female)));
 
 
-        var femaleAreaGenerator = d3.area()
+        var secondAreaGenerator = d3.area()
             .x(d => xScale(d.year))
-            .y0(d => yScale(isAbsolute ? d[f].male : d[f].male / (d[f].male + d[f].female)))
+            .y0(d => yScale(isAbsolute ? d[f][gender] : d[f].male / (d[f].male + d[f].female)))
             .y1(d => yScale(isAbsolute ? (d[f].male + d[f].female) : 1));
 
         d3.select("#app1mainchart")
@@ -176,14 +180,14 @@ const app = {
         d3.select("#app1mainchart")
             .select('.chart')
             .append("path")
-            .classed('male', true)
-            .attr('d', maleAreaGenerator(jobMarketData));
+            .classed(gender, true)
+            .attr('d', firstAreaGenerator(jobMarketData));
 
         d3.select("#app1mainchart")
             .select('.chart')
             .append("path")
-            .classed('female', true)
-            .attr('d', femaleAreaGenerator(jobMarketData));
+            .classed(otherGender, true)
+            .attr('d', secondAreaGenerator(jobMarketData));
 
     }
 };
