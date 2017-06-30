@@ -65,11 +65,6 @@ const app = {
             const population = getPopulation(r)
             return femaleWorkforce / population;
         }
-        function getRelativeMaleActivityRate(r) {
-            const maleActivityRate = getMaleActivityRate(r);
-            const activityRate = getActivityRate(r);
-            return maleActivityRate / activityRate;
-        }
         function getMaleEmploymentRate(r) {
             const population = getPopulation(r)
             return r.maleOccupied / population;
@@ -106,6 +101,7 @@ const app = {
 
         const options = app.getOptions();
         const f = options.maindata;
+        const isAbsolute = options.vistype == 'absolute';
         const n = jobMarketData.length;
         const minYear = d3.min(jobMarketData.map(r => r.year));
         const maxYear = d3.max(jobMarketData.map(r => r.year));
@@ -164,13 +160,13 @@ const app = {
         var maleAreaGenerator = d3.area()
             .x(d => xScale(d.year))
             .y0(yScale(0))
-            .y1(d => yScale(options.vistype == 'absolute' ? d[f].male : (d[f].male + d[f].female)));
+            .y1(d => yScale(isAbsolute ? d[f].male : d[f].male / (d[f].male + d[f].female)));
 
 
         var femaleAreaGenerator = d3.area()
             .x(d => xScale(d.year))
-            .y0(d => yScale(options.vistype == 'absolute' ? d[f].male : (d[f].male + d[f].female)))
-            .y1(d => yScale(options.vistype == 'absolute' ? d[f].male + d[f].female : 1));
+            .y0(d => yScale(isAbsolute ? d[f].male : d[f].male / (d[f].male + d[f].female)))
+            .y1(d => yScale(isAbsolute ? (d[f].male + d[f].female) : 1));
 
         d3.select("#app1mainchart")
             .select('.chart')
