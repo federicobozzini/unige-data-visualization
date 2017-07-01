@@ -112,7 +112,7 @@ const app = {
         const rescale = options.rescale;
         const maleFocused = options.gender == 'male';
         const gendersTmp = ['male', 'female'];
-        const colors = {male: 'steelblue', female: 'pink'};
+        const colors = {male: 'steelblue', female: 'pink', all: 'black'};
         const genders = maleFocused ? gendersTmp : gendersTmp.reverse();
         const [gender, otherGender] = genders;
         const n = jobMarketData.length;
@@ -129,7 +129,8 @@ const app = {
 
         const lineDataset = [
             jobMarketData.map( r => ({year: r.year, key: gender, val: r[f][gender]})),
-            jobMarketData.map( r => ({year: r.year, key: otherGender, val: r[f][otherGender]}))
+            jobMarketData.map( r => ({year: r.year, key: otherGender, val: r[f][otherGender]})),
+            jobMarketData.map( r => ({year: r.year, key: 'all', val: r[f][gender] + r[f][otherGender]}))
             ];
 
 
@@ -203,25 +204,29 @@ const app = {
 
         const plottableData = isLines? lineDataset : layers;
 
-        d3.select("#app1mainchart")
+        const chartLines = d3.select("#app1mainchart")
             .select('.chart')
             .selectAll('path')
-            .data(plottableData)
-            .enter()
+            .data(plottableData);
+
+        chartLines.exit()
+            .remove();
+
+        chartLines.enter()
             .append('path');
 
         d3.select("#app1mainchart")
-             .transition()
-             .duration(transitionDuration)
-             .ease(d3.easeQuad)
-             .select('.chart')
-             .selectAll('path')
-             .attr('stroke', d => isLines ? colors[d[0].key] : colors[d.key])
-             .attr('fill', d => isLines ? colors[d[0].key] : colors[d.key])
-             .attr('fill-opacity', d => isLines ? 0 : 1)
-             .attr('stroke-opacity', 1)
-             .attr('d', isLines ? line : area);
-
+            .select('.chart')
+            .selectAll('path')
+            .transition()
+            .duration(transitionDuration)
+            .ease(d3.easeQuad)
+            .attr('stroke', d => isLines ? colors[d[0].key] : colors[d.key])
+            .attr('stroke-width', d => isLines ? 3 : 0)
+            .attr('fill', d => isLines ? colors[d[0].key] : colors[d.key])
+            .attr('fill-opacity', isLines ? 0 : 1)
+            .attr('stroke-opacity', 1)
+            .attr('d', isLines ? line : area);
     }
 };
 
