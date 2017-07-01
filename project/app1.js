@@ -30,7 +30,6 @@ const app = {
             const selectedButton = radioGroups[g].find(b => b.checked);
             options[selectedButton['name']] = selectedButton['value'];
             const dataset = selectedButton.dataset;
-            Object.keys(dataset).forEach(d => options[d] = dataset[d]);
         });
         return options;
     },
@@ -104,8 +103,11 @@ const app = {
         const options = app.getOptions();
         const f = options.maindata;
         const isAbsolute = options.vistype == 'absolute';
-        const gender = options.gender || 'male';
-        const otherGender = gender == 'female' ? 'male' : 'female';
+        const maleFocused = options.gender == 'male';
+        const gendersTmp = ['male', 'female'];
+        const colors = {male: 'steelblue', female: 'pink'};
+        const genders = maleFocused ? gendersTmp : gendersTmp.reverse();
+        const [gender, otherGender] = genders;
         const n = jobMarketData.length;
         const minYear = d3.min(jobMarketData.map(r => r.year));
         const maxYear = d3.max(jobMarketData.map(r => r.year));
@@ -161,33 +163,38 @@ const app = {
             .ease(d3.easeQuad)
             .call(yAxis);
 
-        var firstAreaGenerator = d3.area()
-            .x(d => xScale(d.year))
-            .y0(yScale(0))
-            .y1(d => yScale(isAbsolute ? d[f][gender] : d[f].male / (d[f].male + d[f].female)));
+        var area = d3.area()
+            .x(d => xScale(d.data.year))
+            .y0(d => yScale(d[0]))
+            .y1(d => yScale(d[1]));
 
+        const stack = d3.stack().keys(genders).offset(d3.stackOffsetNone);
 
-        var secondAreaGenerator = d3.area()
-            .x(d => xScale(d.year))
-            .y0(d => yScale(isAbsolute ? d[f][gender] : d[f].male / (d[f].male + d[f].female)))
-            .y1(d => yScale(isAbsolute ? (d[f].male + d[f].female) : 1));
+        const dataset = jobMarketData.map(r => ({
+            year: r.year,
+            [gender]: isAbsolute ? r[f][gender] : r[f][gender] / (r[f][gender] + r[f][otherGender]),
+            [otherGender]: isAbsolute ? r[f][otherGender] : r[f][otherGender] / (r[f][gender] + r[f][otherGender])
+        }));
+
+        const layers = stack(dataset);
 
         d3.select("#app1mainchart")
             .select('.chart')
             .selectAll('path')
-            .remove();
+            .data(layers)
+            .enter()
+            .append('path')
+            .attr('fill', d => colors[d.key])
+            .attr('d', area);
 
         d3.select("#app1mainchart")
+             .transition()
+             .duration(transitionDuration)
+             .ease(d3.easeQuad)
             .select('.chart')
-            .append("path")
-            .classed(gender, true)
-            .attr('d', firstAreaGenerator(jobMarketData));
-
-        d3.select("#app1mainchart")
-            .select('.chart')
-            .append("path")
-            .classed(otherGender, true)
-            .attr('d', secondAreaGenerator(jobMarketData));
+            .selectAll('path')
+            .attr('fill', d => colors[d.key])
+            .attr('d', area);
 
     }
 };
