@@ -7,9 +7,10 @@ const app = {
                 throw error;
             }
 
-            const radioButtons = document.querySelectorAll('#app1controls input[type=radio]');
+            const controlsSelctor = '#app1controls input[type=radio], #app1controls input[type=checkbox]';
+            const controls = document.querySelectorAll(controlsSelctor);
 
-            radioButtons.forEach(b => b.addEventListener('click', () => app.drawCharts()));
+            controls.forEach(b => b.addEventListener('click', () => app.drawCharts()));
 
             app.data = jobMarketData;
             app.drawCharts();
@@ -25,11 +26,15 @@ const app = {
 
         const radioButtons = [...document.querySelectorAll('#app1controls input[type=radio]')];
         const radioGroups = groupBy(radioButtons, 'name');
+        const checkboxes = [...document.querySelectorAll('#app1controls input[type=checkbox]')];
         const options = {};
         Object.keys(radioGroups).forEach(g => {
             const selectedButton = radioGroups[g].find(b => b.checked);
-            options[selectedButton['name']] = selectedButton['value'];
+            options[selectedButton.name] = selectedButton.value;
             const dataset = selectedButton.dataset;
+        });
+        checkboxes.forEach(c => {
+            options[c.name] = c.checked;
         });
         return options;
     },
@@ -103,6 +108,7 @@ const app = {
         const options = app.getOptions();
         const f = options.maindata;
         const isAbsolute = options.vistype == 'absolute';
+        const rescale = options.rescale;
         const maleFocused = options.gender == 'male';
         const gendersTmp = ['male', 'female'];
         const colors = {male: 'steelblue', female: 'pink'};
@@ -113,6 +119,16 @@ const app = {
         const maxYear = d3.max(jobMarketData.map(r => r.year));
         const xpad = 100;
         const ypad = 70;
+
+        const dataset = jobMarketData.map(r => ({
+            year: r.year,
+            [gender]: isAbsolute ? r[f][gender] : r[f][gender] / (r[f][gender] + r[f][otherGender]),
+            [otherGender]: isAbsolute ? r[f][otherGender] : r[f][otherGender] / (r[f][gender] + r[f][otherGender])
+        }));
+
+        const rescalingFactor = 1.2;
+        const maxVal = d3.max(dataset.map(r => r[gender] + r[otherGender]));
+        const yMax = rescale ? Math.min(maxVal * rescalingFactor,1) : 1;
 
         if (d3.select('#app1mainchart').select('svg').empty()) {
             const mainChart = d3.select('#app1mainchart').append('svg');
@@ -139,7 +155,7 @@ const app = {
             .range([0, W]);
 
         const yScale = d3.scaleLinear()
-            .domain([0, 1])
+            .domain([0, yMax])
             .range([H, 0]);
 
         const xAxis = d3.axisBottom(xScale)
@@ -169,12 +185,6 @@ const app = {
             .y1(d => yScale(d[1]));
 
         const stack = d3.stack().keys(genders).offset(d3.stackOffsetNone);
-
-        const dataset = jobMarketData.map(r => ({
-            year: r.year,
-            [gender]: isAbsolute ? r[f][gender] : r[f][gender] / (r[f][gender] + r[f][otherGender]),
-            [otherGender]: isAbsolute ? r[f][otherGender] : r[f][otherGender] / (r[f][gender] + r[f][otherGender])
-        }));
 
         const layers = stack(dataset);
 
