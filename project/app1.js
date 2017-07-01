@@ -183,18 +183,16 @@ const app = {
             .selectAll('path')
             .data(layers)
             .enter()
-            .append('path')
-            .attr('fill', d => colors[d.key])
-            .attr('d', area);
+            .append('path');
 
         d3.select("#app1mainchart")
              .transition()
              .duration(transitionDuration)
              .ease(d3.easeQuad)
-            .select('.chart')
-            .selectAll('path')
-            .attr('fill', d => colors[d.key])
-            .attr('d', area);
+             .select('.chart')
+             .selectAll('path')
+             .attr('fill', d => colors[d.key])
+             .attr('d', area);
 
     }
 };
