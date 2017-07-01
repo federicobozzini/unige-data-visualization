@@ -10,13 +10,36 @@ const app = {
             const controlsSelctor = '#app1controls input[type=radio], #app1controls input[type=checkbox]';
             const controls = document.querySelectorAll(controlsSelctor);
 
-            controls.forEach(b => b.addEventListener('click', () => app.drawCharts()));
+            controls.forEach(b => b.addEventListener('click', () => {
+                app.checkAllowedControls();
+                app.drawCharts();
+            }));
 
             app.data = jobMarketData;
+            app.checkAllowedControls();
             app.drawCharts();
         });
     },
-    getOptions: function () {
+    checkAllowedControls: function() {
+        const notAllowedTable = {
+            relative: 'rescale',
+            lines: 'gender'
+        };
+        const options = app.getOptions();
+        const controlsSelctor = '#app1controls input[type=radio], #app1controls input[type=checkbox]';
+        const controls = [...document.querySelectorAll(controlsSelctor)];
+        controls.forEach(c => {
+            c.disabled = false;
+            c.parentNode.className = '';
+        });
+        const notAllowedValues = notAllowedTable[options.vistype];
+        if (notAllowedValues)
+            controls.filter(c => c.name === notAllowedValues).forEach(c => {
+                c.disabled = true;
+                c.parentNode.className = 'disabled';
+            });
+    },
+    getOptions: function() {
         function groupBy(xs, key) {
             return xs.reduce(function (rv, x) {
                 (rv[x[key]] = rv[x[key]] || []).push(x);
