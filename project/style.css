@@ -6,8 +6,8 @@
 }
 
 #app1chart > svg  {
-    width: 800px;
-    height: 500px;
+    width: 820px;
+    height: 510px;
 }
 
 #app1controls {
@@ -24,6 +24,22 @@
         
 #app1 label.disabled {
     color: #cecece;
+}
+
+#app1chart .timeline line {
+    stroke: black;
+    stroke-width: 1;
+    stroke-dasharray: 1, 2;
+}
+
+#app1chart .timeline text {
+    font-size: 12px;
+}
+
+#app1chart .border {
+    stroke-width: 1px;
+    stroke: #cecece;
+    fill: none;
 }
 
 /* App 2 */

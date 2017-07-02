@@ -1,5 +1,6 @@
 const app = {
     data: null,
+    externalData: null,
     init: async function () {
         function readJson(url) {
             return new Promise((resolve, reject) => {
@@ -12,6 +13,7 @@ const app = {
         }
 
         const jobMarketData = await readJson("data/app1.json");
+        const events = await readJson("data/events.json");
 
         const controlsSelctor = '#app1controls input[type=radio], #app1controls input[type=checkbox]';
         const controls = document.querySelectorAll(controlsSelctor);
@@ -22,6 +24,9 @@ const app = {
         }));
 
         app.data = jobMarketData;
+        app.externalData = {
+            events: events
+        };
         app.checkAllowedControls();
         app.drawCharts();
 
@@ -134,6 +139,7 @@ const app = {
             }
         }));
 
+        const timelineData = app.externalData.events;
         const options = app.getOptions();
         const f = options.maindata;
         const isAbsolute = options.vistype == 'absolute';
@@ -148,7 +154,16 @@ const app = {
         const minYear = d3.min(jobMarketData.map(r => r.year));
         const maxYear = d3.max(jobMarketData.map(r => r.year));
         const xpad = 100;
-        const ypad = 70;
+        const yBottomPad = 70;
+        const yTopPad = 10;
+
+        //const svgBounds = d3.select("#app1chart").select('svg').node().getBoundingClientRect();
+        const heigth = 510;
+        const width = 800;
+        const H = heigth - yTopPad - yBottomPad;
+        const W = width - xpad;
+        const labelLength = 42;
+        const transitionDuration = 600;
 
         const areaDataset = jobMarketData.map(r => ({
             year: r.year,
@@ -174,23 +189,28 @@ const app = {
 
         if (d3.select('#app1chart').select('svg').empty()) {
             const mainChart = d3.select('#app1chart').append('svg');
-            mainChart
+            const mainBox = mainChart
+                                .append('g')
+                                .attr('class', 'box')
+                                .attr("transform", `translate(${xpad}, ${yTopPad})`);
+            mainChart.append('g')
+                .attr('class', 'xAxis')
+                .attr("transform", `translate(${xpad},${H + yTopPad})`);
+            mainChart.append('g')
+                .attr('class', 'yAxis')
+                .attr("transform", `translate(${xpad}, ${yTopPad})`);
+            mainBox
                 .append('g')
-                .attr('class', 'chart')
-                .attr("transform", `translate(${xpad},0)`);
-            mainChart.append('g')
-                .attr('class', 'xAxis');
-            mainChart.append('g')
-                .attr('class', 'yAxis');
+                .attr('class', 'chart');
+            mainBox
+                .append('g')
+                .attr('class', 'timeline');
+            mainBox
+                .append('rect')
+                .attr('class', 'border')
+                .attr('width', W)
+                .attr('height', H)
         }
-
-        const svgBounds = d3.select("#app1chart").select('svg').node().getBoundingClientRect();
-        const heigth = svgBounds.height;
-        const width = svgBounds.width;
-        const H = heigth - ypad;
-        const W = width - xpad;
-        const labelLength = 42;
-        const transitionDuration = 600;
 
         const xScale = d3.scaleLinear()
             .domain([minYear, maxYear])
@@ -201,21 +221,20 @@ const app = {
             .range([H, 0]);
 
         const xAxis = d3.axisBottom(xScale)
-            .ticks(n);
+            .ticks(n)
+            .tickFormat(d3.format("d"));
 
         const yAxis = d3.axisLeft(yScale);
 
         d3.select(".xAxis")
-            .attr("transform", `translate(${xpad},${H})`)
             .call(xAxis)
             .selectAll('text')
-            .attr("transform", "rotate(270)")
-            .attr('dx', -labelLength)
-            .attr('dy', - W / n / 4)
+            .attr("transform", "rotate(300)")
+            .attr('dx', -34)
+            .attr('dy', 4)
             .style("text-anchor", "start");
 
         d3.select('.yAxis')
-            .attr("transform", `translate(${xpad},0)`)
             .transition()
             .duration(transitionDuration)
             .ease(d3.easeQuad)
@@ -259,6 +278,45 @@ const app = {
             .attr('fill-opacity', isLines ? 0 : 1)
             .attr('stroke-opacity', 1)
             .attr('d', isLines ? line : area);
+
+
+
+        const timelineChart = d3.select("#app1chart")
+            .select('.timeline')
+            .selectAll('line')
+            .data(timelineData);
+
+        timelineChart.exit()
+            .remove();
+
+        const timelineGroups = timelineChart.enter()
+            .append('g');
+
+        timelineGroups.append('line');
+        timelineGroups.append('text');
+
+        d3.select("#app1chart")
+            .select('.timeline')
+            .selectAll('line')
+            .transition()
+            .duration(transitionDuration)
+            .ease(d3.easeQuad)
+            .attr("x1", d => xScale(d.year))
+            .attr("y1", 0)
+            .attr("x2", d => xScale(d.year)) 
+            .attr("y2", H);
+
+        d3.select("#app1chart")
+            .select('.timeline')
+            .selectAll('text')
+            .attr("transform", "rotate(90)")
+            .transition()
+            .duration(transitionDuration)
+            .ease(d3.easeQuad)
+            .attr('x', 5)
+            .attr("y", d => -2 -xScale(d.year))
+            .text(d => d.year + ": " + d.event)
+        
     }
 };
 
