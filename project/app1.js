@@ -166,8 +166,8 @@ const app = {
         const maxVal = d3.max(isLines ? lineDatasetValues : areaDatasetValues);
         const yMax = rescale ? Math.min(maxVal * rescalingFactor,1) : 1;
 
-        if (d3.select('#app1mainchart').select('svg').empty()) {
-            const mainChart = d3.select('#app1mainchart').append('svg');
+        if (d3.select('#app1chart').select('svg').empty()) {
+            const mainChart = d3.select('#app1chart').append('svg');
             mainChart
                 .append('g')
                 .attr('class', 'chart')
@@ -178,7 +178,7 @@ const app = {
                 .attr('class', 'yAxis');
         }
 
-        const svgBounds = d3.select("#app1mainchart").select('svg').node().getBoundingClientRect();
+        const svgBounds = d3.select("#app1chart").select('svg').node().getBoundingClientRect();
         const heigth = svgBounds.height;
         const width = svgBounds.width;
         const H = heigth - ypad;
@@ -230,7 +230,7 @@ const app = {
 
         const plottableData = isLines? lineDataset : layers;
 
-        const chartLines = d3.select("#app1mainchart")
+        const chartLines = d3.select("#app1chart")
             .select('.chart')
             .selectAll('path')
             .data(plottableData);
@@ -241,7 +241,7 @@ const app = {
         chartLines.enter()
             .append('path');
 
-        d3.select("#app1mainchart")
+        d3.select("#app1chart")
             .select('.chart')
             .selectAll('path')
             .transition()

@@ -5,7 +5,7 @@
     vertical-align: top;
 }
 
-#app1mainchart > svg  {
+#app1chart > svg  {
     width: 800px;
     height: 500px;
 }
