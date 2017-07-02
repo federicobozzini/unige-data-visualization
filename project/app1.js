@@ -22,21 +22,21 @@ const app = {
     },
     checkAllowedControls: function() {
         const notAllowedTable = {
-            relative: 'rescale',
-            lines: 'gender'
+            relative: ['rescale'],
+            lines: ['gender']
         };
         const options = app.getOptions();
         const controlsSelctor = '#app1controls input[type=radio], #app1controls input[type=checkbox]';
         const controls = [...document.querySelectorAll(controlsSelctor)];
         controls.forEach(c => {
             c.disabled = false;
-            c.parentNode.className = '';
+            c.parentNode.classList.remove('disabled');
         });
         const notAllowedValues = notAllowedTable[options.vistype];
         if (notAllowedValues)
-            controls.filter(c => c.name === notAllowedValues).forEach(c => {
+            controls.filter(c => notAllowedValues.includes(c.name)).forEach(c => {
                 c.disabled = true;
-                c.parentNode.className = 'disabled';
+                c.parentNode.classList.add('disabled');
             });
     },
     getOptions: function() {
