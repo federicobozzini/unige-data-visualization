@@ -147,7 +147,7 @@ const app = {
         const rescale = options.rescale;
         const maleFocused = options.gender == 'male';
         const gendersTmp = ['male', 'female'];
-        const colors = { male: 'steelblue', female: 'pink', all: 'black' };
+        const colors = { male: 'skyblue', female: 'pink', all: 'lightgrey' };
         const genders = maleFocused ? gendersTmp : gendersTmp.reverse();
         const [gender, otherGender] = genders;
         const n = jobMarketData.length;
@@ -273,7 +273,7 @@ const app = {
             .duration(transitionDuration)
             .ease(d3.easeQuad)
             .attr('stroke', d => colors[d.key])
-            .attr('stroke-width', 3)
+            .attr('stroke-width', 2)
             .attr('fill', d => colors[d.key])
             .attr('fill-opacity', isLines ? 0 : 1)
             .attr('stroke-opacity', 1)

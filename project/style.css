@@ -5,7 +5,7 @@
     vertical-align: top;
 }
 
-#app1chart > svg  {
+#app1chart, #app1chart > svg  {
     width: 820px;
     height: 510px;
 }
@@ -33,7 +33,7 @@
 }
 
 #app1chart .timeline text {
-    font-size: 12px;
+    font-size: 13px;
 }
 
 #app1chart .border {
