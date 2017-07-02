@@ -22,14 +22,8 @@
     margin-bottom: 20px;
 }
         
-.male {
-    stroke: none;
-    fill: steelblue
-}
-
-.female {
-    stroke: none;
-    fill: pink;
+#app1 label.disabled {
+    color: #cecece;
 }
 
 /* App 2 */

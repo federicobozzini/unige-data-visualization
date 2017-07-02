@@ -7,15 +7,39 @@ const app = {
                 throw error;
             }
 
-            const radioButtons = document.querySelectorAll('#app1controls input[type=radio]');
+            const controlsSelctor = '#app1controls input[type=radio], #app1controls input[type=checkbox]';
+            const controls = document.querySelectorAll(controlsSelctor);
 
-            radioButtons.forEach(b => b.addEventListener('click', () => app.drawCharts()));
+            controls.forEach(b => b.addEventListener('click', () => {
+                app.checkAllowedControls();
+                app.drawCharts();
+            }));
 
             app.data = jobMarketData;
+            app.checkAllowedControls();
             app.drawCharts();
         });
     },
-    getOptions: function () {
+    checkAllowedControls: function() {
+        const notAllowedTable = {
+            relative: 'rescale',
+            lines: 'gender'
+        };
+        const options = app.getOptions();
+        const controlsSelctor = '#app1controls input[type=radio], #app1controls input[type=checkbox]';
+        const controls = [...document.querySelectorAll(controlsSelctor)];
+        controls.forEach(c => {
+            c.disabled = false;
+            c.parentNode.className = '';
+        });
+        const notAllowedValues = notAllowedTable[options.vistype];
+        if (notAllowedValues)
+            controls.filter(c => c.name === notAllowedValues).forEach(c => {
+                c.disabled = true;
+                c.parentNode.className = 'disabled';
+            });
+    },
+    getOptions: function() {
         function groupBy(xs, key) {
             return xs.reduce(function (rv, x) {
                 (rv[x[key]] = rv[x[key]] || []).push(x);
@@ -25,10 +49,15 @@ const app = {
 
         const radioButtons = [...document.querySelectorAll('#app1controls input[type=radio]')];
         const radioGroups = groupBy(radioButtons, 'name');
+        const checkboxes = [...document.querySelectorAll('#app1controls input[type=checkbox]')];
         const options = {};
         Object.keys(radioGroups).forEach(g => {
             const selectedButton = radioGroups[g].find(b => b.checked);
-            options[selectedButton['name']] = selectedButton['value'];
+            options[selectedButton.name] = selectedButton.value;
+            const dataset = selectedButton.dataset;
+        });
+        checkboxes.forEach(c => {
+            options[c.name] = c.checked;
         });
         return options;
     },
@@ -64,11 +93,6 @@ const app = {
             const femaleWorkforce = getFemaleWorkforce(r);
             const population = getPopulation(r)
             return femaleWorkforce / population;
-        }
-        function getRelativeMaleActivityRate(r) {
-            const maleActivityRate = getMaleActivityRate(r);
-            const activityRate = getActivityRate(r);
-            return maleActivityRate / activityRate;
         }
         function getMaleEmploymentRate(r) {
             const population = getPopulation(r)
@@ -106,11 +130,38 @@ const app = {
 
         const options = app.getOptions();
         const f = options.maindata;
+        const isAbsolute = options.vistype == 'absolute';
+        const isLines = options.vistype == 'lines';
+        const rescale = options.rescale;
+        const maleFocused = options.gender == 'male';
+        const gendersTmp = ['male', 'female'];
+        const colors = {male: 'steelblue', female: 'pink', all: 'black'};
+        const genders = maleFocused ? gendersTmp : gendersTmp.reverse();
+        const [gender, otherGender] = genders;
         const n = jobMarketData.length;
         const minYear = d3.min(jobMarketData.map(r => r.year));
         const maxYear = d3.max(jobMarketData.map(r => r.year));
         const xpad = 100;
         const ypad = 70;
+
+        const areaDataset = jobMarketData.map(r => ({
+            year: r.year,
+            [gender]: isAbsolute ? r[f][gender] : r[f][gender] / (r[f][gender] + r[f][otherGender]),
+            [otherGender]: isAbsolute ? r[f][otherGender] : r[f][otherGender] / (r[f][gender] + r[f][otherGender])
+        }));
+
+        const lineDataset = [
+            jobMarketData.map( r => ({year: r.year, key: gender, val: r[f][gender]})),
+            jobMarketData.map( r => ({year: r.year, key: otherGender, val: r[f][otherGender]})),
+            jobMarketData.map( r => ({year: r.year, key: 'all', val: r[f][gender] + r[f][otherGender]}))
+            ];
+
+
+        const rescalingFactor = 1.2;
+        const lineDatasetValues = lineDataset.map(d => d3.max(d.map(r => r.val)));
+        const areaDatasetValues = areaDataset.map(r => r[gender] + r[otherGender]);
+        const maxVal = d3.max(isLines ? lineDatasetValues : areaDatasetValues);
+        const yMax = rescale ? Math.min(maxVal * rescalingFactor,1) : 1;
 
         if (d3.select('#app1mainchart').select('svg').empty()) {
             const mainChart = d3.select('#app1mainchart').append('svg');
@@ -137,7 +188,7 @@ const app = {
             .range([0, W]);
 
         const yScale = d3.scaleLinear()
-            .domain([0, 1])
+            .domain([0, yMax])
             .range([H, 0]);
 
         const xAxis = d3.axisBottom(xScale)
@@ -161,34 +212,44 @@ const app = {
             .ease(d3.easeQuad)
             .call(yAxis);
 
-        var maleAreaGenerator = d3.area()
-            .x(d => xScale(d.year))
-            .y0(yScale(0))
-            .y1(d => yScale(options.vistype == 'absolute' ? d[f].male : (d[f].male + d[f].female)));
+        const area = d3.area()
+            .x(d => xScale(d.data.year))
+            .y0(d => yScale(d[0]))
+            .y1(d => yScale(d[1]));
 
-
-        var femaleAreaGenerator = d3.area()
+        const line = d3.line()
             .x(d => xScale(d.year))
-            .y0(d => yScale(options.vistype == 'absolute' ? d[f].male : (d[f].male + d[f].female)))
-            .y1(d => yScale(options.vistype == 'absolute' ? d[f].male + d[f].female : 1));
+            .y(d => yScale(d.val));
+
+        const stack = d3.stack().keys(genders).offset(d3.stackOffsetNone);
+
+        const layers = stack(areaDataset)
+
+        const plottableData = isLines? lineDataset : layers;
+
+        const chartLines = d3.select("#app1mainchart")
+            .select('.chart')
+            .selectAll('path')
+            .data(plottableData);
+
+        chartLines.exit()
+            .remove();
+
+        chartLines.enter()
+            .append('path');
 
         d3.select("#app1mainchart")
             .select('.chart')
             .selectAll('path')
-            .remove();
-
-        d3.select("#app1mainchart")
-            .select('.chart')
-            .append("path")
-            .classed('male', true)
-            .attr('d', maleAreaGenerator(jobMarketData));
-
-        d3.select("#app1mainchart")
-            .select('.chart')
-            .append("path")
-            .classed('female', true)
-            .attr('d', femaleAreaGenerator(jobMarketData));
-
+            .transition()
+            .duration(transitionDuration)
+            .ease(d3.easeQuad)
+            .attr('stroke', d => isLines ? colors[d[0].key] : colors[d.key])
+            .attr('stroke-width', d => isLines ? 3 : 0)
+            .attr('fill', d => isLines ? colors[d[0].key] : colors[d.key])
+            .attr('fill-opacity', isLines ? 0 : 1)
+            .attr('stroke-opacity', 1)
+            .attr('d', isLines ? line : area);
     }
 };
 
