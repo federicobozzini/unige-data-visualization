@@ -1,26 +1,32 @@
 const app = {
     data: null,
-    init: function () {
-        d3.json("data/app1.json", function (error, jobMarketData) {
-            if (error) {
-                console.log(error);
-                throw error;
-            }
+    init: async function () {
+        function readJson(url) {
+            return new Promise((resolve, reject) => {
+                d3.json(url, (error, data) => {
+                    if (error)
+                        return reject(error);
+                    resolve(data);
+                });
+            });
+        }
 
-            const controlsSelctor = '#app1controls input[type=radio], #app1controls input[type=checkbox]';
-            const controls = document.querySelectorAll(controlsSelctor);
+        const jobMarketData = await readJson("data/app1.json");
 
-            controls.forEach(b => b.addEventListener('click', () => {
-                app.checkAllowedControls();
-                app.drawCharts();
-            }));
+        const controlsSelctor = '#app1controls input[type=radio], #app1controls input[type=checkbox]';
+        const controls = document.querySelectorAll(controlsSelctor);
 
-            app.data = jobMarketData;
+        controls.forEach(b => b.addEventListener('click', () => {
             app.checkAllowedControls();
             app.drawCharts();
-        });
+        }));
+
+        app.data = jobMarketData;
+        app.checkAllowedControls();
+        app.drawCharts();
+
     },
-    checkAllowedControls: function() {
+    checkAllowedControls: function () {
         const notAllowedTable = {
             relative: ['rescale'],
             lines: ['gender']
@@ -39,7 +45,7 @@ const app = {
                 c.parentNode.classList.add('disabled');
             });
     },
-    getOptions: function() {
+    getOptions: function () {
         function groupBy(xs, key) {
             return xs.reduce(function (rv, x) {
                 (rv[x[key]] = rv[x[key]] || []).push(x);
@@ -135,7 +141,7 @@ const app = {
         const rescale = options.rescale;
         const maleFocused = options.gender == 'male';
         const gendersTmp = ['male', 'female'];
-        const colors = {male: 'steelblue', female: 'pink', all: 'black'};
+        const colors = { male: 'steelblue', female: 'pink', all: 'black' };
         const genders = maleFocused ? gendersTmp : gendersTmp.reverse();
         const [gender, otherGender] = genders;
         const n = jobMarketData.length;
@@ -151,10 +157,10 @@ const app = {
         }));
 
         const lineDataset = [
-            jobMarketData.map( r => ({year: r.year, val: r[f][gender]})),
-            jobMarketData.map( r => ({year: r.year, val: r[f][otherGender]})),
-            jobMarketData.map( r => ({year: r.year, val: r[f][gender] + r[f][otherGender]}))
-            ];
+            jobMarketData.map(r => ({ year: r.year, val: r[f][gender] })),
+            jobMarketData.map(r => ({ year: r.year, val: r[f][otherGender] })),
+            jobMarketData.map(r => ({ year: r.year, val: r[f][gender] + r[f][otherGender] }))
+        ];
         lineDataset[0].key = gender;
         lineDataset[1].key = otherGender;
         lineDataset[2].key = 'all';
@@ -164,7 +170,7 @@ const app = {
         const lineDatasetValues = lineDataset.map(d => d3.max(d.map(r => r.val)));
         const areaDatasetValues = areaDataset.map(r => r[gender] + r[otherGender]);
         const maxVal = d3.max(isLines ? lineDatasetValues : areaDatasetValues);
-        const yMax = rescale ? Math.min(maxVal * rescalingFactor,1) : 1;
+        const yMax = rescale ? Math.min(maxVal * rescalingFactor, 1) : 1;
 
         if (d3.select('#app1chart').select('svg').empty()) {
             const mainChart = d3.select('#app1chart').append('svg');
@@ -228,7 +234,7 @@ const app = {
 
         const layers = stack(areaDataset)
 
-        const plottableData = isLines? lineDataset : layers;
+        const plottableData = isLines ? lineDataset : layers;
 
         const chartLines = d3.select("#app1chart")
             .select('.chart')
