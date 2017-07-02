@@ -151,10 +151,13 @@ const app = {
         }));
 
         const lineDataset = [
-            jobMarketData.map( r => ({year: r.year, key: gender, val: r[f][gender]})),
-            jobMarketData.map( r => ({year: r.year, key: otherGender, val: r[f][otherGender]})),
-            jobMarketData.map( r => ({year: r.year, key: 'all', val: r[f][gender] + r[f][otherGender]}))
+            jobMarketData.map( r => ({year: r.year, val: r[f][gender]})),
+            jobMarketData.map( r => ({year: r.year, val: r[f][otherGender]})),
+            jobMarketData.map( r => ({year: r.year, val: r[f][gender] + r[f][otherGender]}))
             ];
+        lineDataset[0].key = gender;
+        lineDataset[1].key = otherGender;
+        lineDataset[2].key = 'all';
 
 
         const rescalingFactor = 1.2;
@@ -244,9 +247,9 @@ const app = {
             .transition()
             .duration(transitionDuration)
             .ease(d3.easeQuad)
-            .attr('stroke', d => isLines ? colors[d[0].key] : colors[d.key])
-            .attr('stroke-width', d => isLines ? 3 : 0)
-            .attr('fill', d => isLines ? colors[d[0].key] : colors[d.key])
+            .attr('stroke', d => colors[d.key])
+            .attr('stroke-width', 3)
+            .attr('fill', d => colors[d.key])
             .attr('fill-opacity', isLines ? 0 : 1)
             .attr('stroke-opacity', 1)
             .attr('d', isLines ? line : area);
