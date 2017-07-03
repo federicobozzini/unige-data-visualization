@@ -43,6 +43,20 @@
 }
 
 /* App 2 */
+#app2-data-container{
+    display: flex;
+}
+
+#app2-cmds{
+    display: default;
+}
+#app2-map{    
+    height: 550px;
+}
+#app2-info{
+    height: 550px;
+}
+
 path.region{
     stroke: #cecece;
 }
