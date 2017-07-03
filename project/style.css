@@ -45,7 +45,7 @@
 /* App 2 */
 
 #app2-cmds {
-    display: default;
+    margin-bottom: 35px;
 }
 #app2-map {    
     height: 550px;
