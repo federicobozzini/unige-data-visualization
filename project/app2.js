@@ -56,10 +56,17 @@
 
 
     function init() {
+        initTitle();
         initCmds();
         initMap();
         initBarChart();
         update();
+    }
+
+    function initTitle() {
+        d3.select('#app2-title')
+            .append('h3')
+            .text(currentSelections.chart);
     }
 
     function initMap() {
@@ -89,6 +96,7 @@
         const cmds = d3.select('#app2-cmds');
 
         const yearSelect = cmds.append('div')
+            .text('Year: ')
             .append('select')
             .attr('id', 'year-cmd');
 
@@ -102,6 +110,7 @@
             .text(y => y);
 
         const chartSelect = cmds.append('div')
+            .text('Data: ')
             .append('select')
             .attr('id', 'chart-cmd');
 
@@ -116,12 +125,12 @@
 
         const label = cmds.append('div')
             .append('label');
-        label.text('Normalize with population');
         label.append('input')
             .attr('type', 'checkbox')
             .property('checked', true)
             .attr('id', 'normalize-cmd')
             .on('change', update);
+        label.append('span').text('Normalize with population');
     }
 
 
@@ -141,6 +150,9 @@
         }
         else
             d3.select('#normalize-cmd').property('disabled', false);
+
+        d3.select('#app2-title').select('h3').text(currentSelections.chart);
+
 
         updateMap();
         updateBarChart();
@@ -174,7 +186,7 @@
         const reg = map.selectAll('.region')
             .data(topoMap);
 
-        var tip = d3.tip()
+        const tip = d3.tip()
             .attr('class', 'tip')
             .html(d => getRegion(d).name + '<br>' + formatter.format(getData(d).label));
         map.call(tip);
@@ -191,9 +203,15 @@
 
         map.selectAll('.region')
             .on('click', reg => {
+                d3.event.stopPropagation();
                 currentSelections.regionIndex = reg.properties.COD_REG - 1;
                 updateBarChart();
             });
+
+        map.on('click', reg => {
+            currentSelections.regionIndex = italyIndex;
+            updateBarChart();
+        });
     }
 
     function getCurrentData(chart, year) {
@@ -221,7 +239,7 @@
 
         const barChartTitle = d3.select('#app2-info')
             .select('h3')
-            .text(currentSelections.chart + ' - ' + regions[currentSelections.regionIndex].name);
+            .text(regions[currentSelections.regionIndex].name);
 
         const barChartSvg = d3.select('#app2-info').select('svg');
         const svg = {
@@ -229,10 +247,14 @@
             yAxis: barChartSvg.select('#yAxis'),
             bars: barChartSvg.select('#bars')
         }
+        const tip = d3.tip()
+            .attr('class', 'tip')
+            .html(d => formatter.format(d.datum));
+        barChartSvg.call(tip);
 
         const svgBounds = barChartSvg.node().getBoundingClientRect();
         const padding = { top: 20, right: 20, bottom: 100, left: 70 };
-        const barSpacing = 2;
+        const barSpacing = 50;
 
         const chartSize = {
             width: svgBounds.width - padding.left - padding.right,
@@ -246,10 +268,12 @@
         rects.enter()
             .append('rect')
             .merge(rects)
+            .on('mouseover', tip.show)
+            .on('mouseout', tip.hide)
             .transition()
             .attr('class', 'bar')
             .attr('transform', 'translate(' + padding.left + ',' + padding.top + ' )')
-            .attr('x', d => scales.x(d.year))
+            .attr('x', d => scales.x(d.year) + (barSpacing / 2))
             .attr('y', d => scales.y(d.datum))
             .attr('width', scales.x.bandwidth() - barSpacing)
             .attr('height', d => chartSize.height - scales.y(d.datum))
@@ -267,7 +291,7 @@
             color = d3.scaleLinear();
 
         x.domain(data.map(d => d.year));
-        y.domain([d3.min(data, d => d.datum) * 0.95, d3.max(data, d => d.datum)]);
+        y.domain([d3.min(data, d => d.datum) * 0.5, d3.max(data, d => d.datum)]);
         color.domain([0, d3.max(data, d => d.datum)])
             .interpolate(d3.interpolateLab)
             .range([d3.rgb('#ffffbf'), d3.rgb('#009900')])
