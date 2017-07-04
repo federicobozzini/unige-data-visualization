@@ -72,8 +72,8 @@
     function initMap() {
         d3.select('#app2-map')
             .append('svg')
-            .style('width', mapSizes.width)
-            .style('height', mapSizes.height);
+            .attr('width', mapSizes.width)
+            .attr('height', mapSizes.height);
     }
 
     function initBarChart() {
@@ -83,8 +83,8 @@
 
         const svg = d3.select('#app2-info')
             .append('svg')
-            .style('width', barChartSizes.width)
-            .style('height', barChartSizes.height);
+            .attr('width', barChartSizes.width)
+            .attr('height', barChartSizes.height);
 
 
         svg.append('g').attr('id', 'xAxis');
