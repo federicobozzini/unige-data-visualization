@@ -43,10 +43,43 @@
 }
 
 /* App 2 */
-path.region{
-    stroke: #cecece;
+
+#app2-cmds {
+    margin-bottom: 35px;
+}
+#app2-map {    
+    height: 550px;
+}
+#app2-info {
+    height: 550px;
 }
 
-.tip{
-    background-color: #cecece;
+
+#app2-cmds > div {
+    margin-bottom: 10px;
+}
+
+path.region {
+    stroke: #cecece;
+    cursor: pointer;
+}
+
+.tip {
+    border: 1px solid #cecece;
+    border-radius: 10px;
+    background-color: #ffffff;
+    padding: 8px;
+}
+
+#app2-map > svg{
+    cursor: pointer;
+}
+
+#app2-info > h3,
+#app2-title > h3 {
+    text-transform: capitalize;
+}
+
+.flex {
+    display: flex;
 }
