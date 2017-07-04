@@ -14,6 +14,8 @@ const app = {
 
         const jobMarketData = await readJson("data/app1.json");
         const events = await readJson("data/events.json");
+        const reforms = await readJson("data/reforms.json");
+        const legislatures = await readJson("data/legislatures.json");
 
         const controlsSelctor = '#app1controls input[type=radio], #app1controls input[type=checkbox]';
         const controls = document.querySelectorAll(controlsSelctor);
@@ -25,7 +27,10 @@ const app = {
 
         app.data = jobMarketData;
         app.externalData = {
-            events: events
+            events: events,
+            reforms: reforms,
+            legislatures: legislatures,
+            none: []
         };
         app.checkAllowedControls();
         app.drawCharts();
@@ -139,8 +144,8 @@ const app = {
             }
         }));
 
-        const timelineData = app.externalData.events;
         const options = app.getOptions();
+        const timelineData = app.externalData[options.timelineData];
         const f = options.maindata;
         const isAbsolute = options.vistype == 'absolute';
         const isLines = options.vistype == 'lines';
@@ -279,17 +284,16 @@ const app = {
             .attr('stroke-opacity', 1)
             .attr('d', isLines ? line : area);
 
-
-
         const timelineChart = d3.select("#app1chart")
             .select('.timeline')
-            .selectAll('line')
+            .selectAll('g')
             .data(timelineData);
 
         timelineChart.exit()
             .remove();
 
-        const timelineGroups = timelineChart.enter()
+        const timelineGroups = timelineChart
+            .enter()
             .append('g');
 
         timelineGroups.append('line');
@@ -297,7 +301,8 @@ const app = {
 
         d3.select("#app1chart")
             .select('.timeline')
-            .selectAll('line')
+            .selectAll('g')
+            .select('line')
             .transition()
             .duration(transitionDuration)
             .ease(d3.easeQuad)
@@ -308,14 +313,15 @@ const app = {
 
         d3.select("#app1chart")
             .select('.timeline')
-            .selectAll('text')
+            .selectAll('g')
+            .select('text')
             .attr("transform", "rotate(90)")
             .transition()
             .duration(transitionDuration)
             .ease(d3.easeQuad)
             .attr('x', 5)
             .attr("y", d => -2 -xScale(d.year))
-            .text(d => d.year + ": " + d.event)
+            .text(d => d.year + ": " + d.event);
         
     }
 };
