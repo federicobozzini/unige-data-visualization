@@ -159,16 +159,19 @@ const app = {
         const minYear = d3.min(jobMarketData.map(r => r.year));
         const maxYear = d3.max(jobMarketData.map(r => r.year));
         const xpad = 100;
-        const yBottomPad = 70;
+        const yBottomPad = 100;
         const yTopPad = 10;
 
-        //const svgBounds = d3.select("#app1chart").select('svg').node().getBoundingClientRect();
-        const heigth = 510;
-        const width = 800;
-        const H = heigth - yTopPad - yBottomPad;
-        const W = width - xpad;
+        const svgBounds = d3.select("#app1chart").node().getBoundingClientRect();
+        const svgHeight = svgBounds.height;
+        const svgWidth = svgBounds.width;
+        const legendHeight = 50;
+        const legendWidth = svgWidth;
+        const H = svgHeight - yTopPad - yBottomPad;
+        const W = svgWidth - xpad;
         const labelLength = 42;
         const transitionDuration = 600;
+        const legendElementWidth =80;
 
         const areaDataset = jobMarketData.map(r => ({
             year: r.year,
@@ -192,24 +195,41 @@ const app = {
         const maxVal = d3.max(isLines ? lineDatasetValues : areaDatasetValues);
         const yMax = rescale ? Math.min(maxVal * rescalingFactor, 1) : 1;
 
-        if (d3.select('#app1chart').select('svg').empty()) {
-            const mainChart = d3.select('#app1chart').append('svg');
+        if (d3.select('#app1chart').selectAll('svg').empty()) {
+
+            d3.select('#app1chart')
+                .append('svg')
+                .attr('class', 'legend')
+                .attr('width', legendWidth)
+                .attr('height', legendHeight)
+                .attr("transform", `translate(${xpad}, 0)`);
+
+            const mainChart = d3.select('#app1chart')
+                .append('svg')
+                .attr('width', svgWidth)
+                .attr('height', svgHeight);
+
             const mainBox = mainChart
-                                .append('g')
-                                .attr('class', 'box')
-                                .attr("transform", `translate(${xpad}, ${yTopPad})`);
+                .append('g')
+                .attr('class', 'box')
+                .attr("transform", `translate(${xpad}, ${yTopPad})`);
+
             mainChart.append('g')
                 .attr('class', 'xAxis')
                 .attr("transform", `translate(${xpad},${H + yTopPad})`);
+
             mainChart.append('g')
                 .attr('class', 'yAxis')
                 .attr("transform", `translate(${xpad}, ${yTopPad})`);
+
             mainBox
                 .append('g')
                 .attr('class', 'chart');
+
             mainBox
                 .append('g')
                 .attr('class', 'timeline');
+
             mainBox
                 .append('rect')
                 .attr('class', 'border')
@@ -260,6 +280,8 @@ const app = {
 
         const plottableData = isLines ? lineDataset : layers;
 
+        const legendData = plottableData.map(d => ({key: d.key, color: colors[d.key]}));
+
         const chartLines = d3.select("#app1chart")
             .select('.chart')
             .selectAll('path')
@@ -308,7 +330,7 @@ const app = {
             .ease(d3.easeQuad)
             .attr("x1", d => xScale(d.year))
             .attr("y1", 0)
-            .attr("x2", d => xScale(d.year)) 
+            .attr("x2", d => xScale(d.year))
             .attr("y2", H);
 
         d3.select("#app1chart")
@@ -320,9 +342,43 @@ const app = {
             .duration(transitionDuration)
             .ease(d3.easeQuad)
             .attr('x', 5)
-            .attr("y", d => -2 -xScale(d.year))
+            .attr("y", d => -2 - xScale(d.year))
             .text(d => d.year + ": " + d.event);
+
+        const legendChart = d3.select("#app1chart")
+            .select('.legend')
+            .selectAll('g')
+            .data(legendData);
+
+        legendChart.exit()
+            .remove();
+       
+
+        const legendGroups = legendChart
+            .enter()
+            .append('g');
+
+        legendGroups.append('text');
+        legendGroups.append('rect');
         
+        d3.select("#app1chart")
+            .select('.legend')
+            .selectAll('g')
+            .select('text')
+            .attr('x', (d, i) => i * legendElementWidth)
+            .attr("y", legendHeight/2)
+            .text(d => d.key);
+        
+        d3.select("#app1chart")
+            .select('.legend')
+            .selectAll('g')
+            .select('rect')
+            .attr('x', (d, i) => i * legendElementWidth + legendElementWidth/2)
+            .attr("y", legendHeight/2-15)
+            .attr('width', 20)
+            .attr("height", 20)
+            .attr('fill', d => d.color);
+
     }
 };
 
