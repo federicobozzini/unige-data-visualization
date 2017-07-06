@@ -249,7 +249,8 @@ const app = {
             .ticks(n)
             .tickFormat(d3.format("d"));
 
-        const yAxis = d3.axisLeft(yScale);
+        const yAxis = d3.axisLeft(yScale)
+            .tickFormat(d3.format(".0%"));
 
         d3.select(".xAxis")
             .call(xAxis)
@@ -378,7 +379,7 @@ const app = {
             .attr('width', 20)
             .attr("height", 20)
             .attr('fill', d => d.color);
-
+            
     }
 };
 
