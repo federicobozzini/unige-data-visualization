@@ -1,0 +1,91 @@
+/* App 1 */
+
+#app1 > div {
+    display: inline-block;
+    vertical-align: top;
+}
+
+#app1chart  {
+    width: 820px;
+    height: 600px;
+}
+
+#app1controls {
+    width: 200px;
+}
+
+#app1controls label {
+    display: block;
+}
+
+#app1controls > div {
+    margin-bottom: 20px;
+}
+        
+#app1 label.disabled {
+    color: #cecece;
+}
+
+#app1chart .timeline line {
+    stroke: black;
+    stroke-width: 1;
+    stroke-dasharray: 1, 2;
+}
+
+#app1chart .timeline text {
+    font-size: 13px;
+}
+
+#app1chart .border {
+    stroke-width: 1px;
+    stroke: #cecece;
+    fill: none;
+}
+
+#app1chart .legend text {
+    stroke-width: 1;
+    stroke: black;
+    font-size: 12px;
+}
+
+/* App 2 */
+
+#app2-cmds {
+    margin-bottom: 35px;
+}
+#app2-map {    
+    height: 550px;
+}
+#app2-info {
+    height: 550px;
+}
+
+
+#app2-cmds > div {
+    margin-bottom: 10px;
+}
+
+path.region {
+    stroke: #cecece;
+    cursor: pointer;
+}
+
+.tip {
+    border: 1px solid #cecece;
+    border-radius: 10px;
+    background-color: #ffffff;
+    padding: 8px;
+}
+
+#app2-map > svg{
+    cursor: pointer;
+}
+
+#app2-info > h3,
+#app2-title > h3 {
+    text-transform: capitalize;
+}
+
+.flex {
+    display: flex;
+}
