@@ -187,7 +187,9 @@
         const legendPosition = { x: 450, y: 10 };
         const legendTextPadding = 4;
 
-        const range = d3.range(min, max, (max - min) / legendCount);
+        let step = (max - min) / legendCount;
+        if (step > 1000) step = parseInt(step, 10);
+        const range = d3.range(min, max, step);
 
         legendSvg.selectAll('*').remove();
 
@@ -197,17 +199,19 @@
             .append('g');
 
         legends.append('text')
+            .transition()
             .attr('text-anchor', 'end')
-            .attr('x', legendPosition.x)
+            .attr('x', legendPosition.x - 2)
             .attr('y', (d, i) => (i + 1) * legendColorSize.height + legendPosition.y - legendTextPadding)
-            .text(d => d.toPrecision(7));
+            .text(d => formatter.format(d));
 
         legends.append('rect')
+            .style('fill', d => colorScale(d))
+            .transition()
             .attr('x', legendPosition.x)
             .attr('y', (d, i) => i * legendColorSize.height + legendPosition.y)
             .attr('width', legendColorSize.width)
-            .attr('height', legendColorSize.height)
-            .style('fill', d => colorScale(d));
+            .attr('height', legendColorSize.height);
     }
 
     function updateMap() {
@@ -342,7 +346,7 @@
             y.domain([d3.min(data, d => d.datum) * 0.5, d3.max(data, d => d.datum)]);
             color.domain([0, d3.max(data, d => d.datum)])
                 .interpolate(d3.interpolateLab)
-                .range([d3.rgb('#aaaaaa'), d3.rgb('#444444')]);
+                .range([d3.rgb('#E1F5FE'), d3.rgb('#01679B')]);
 
             return { x, y, color };
         }
