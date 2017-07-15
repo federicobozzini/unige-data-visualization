@@ -171,7 +171,7 @@ const app = {
         const legendWidth = W;
         const labelLength = 42;
         const transitionDuration = 600;
-        const legendElementWidth =80;
+        const legendElementWidth = 80;
 
         const areaDataset = jobMarketData.map(r => ({
             year: r.year,
@@ -281,7 +281,15 @@ const app = {
 
         const plottableData = isLines ? lineDataset : layers;
 
-        const legendData = plottableData.map(d => ({key: d.key, color: colors[d.key]}));
+        const legendData = plottableData
+            .map(d => ({ key: d.key, color: colors[d.key] }))
+            .sort((a, b) => {
+                if (a.key < b.key)
+                    return 1;
+                if (a.key > b.key)
+                    return -1;
+                return -0;
+            });
 
         const chartLines = d3.select("#app1chart")
             .select('.chart')
@@ -353,7 +361,7 @@ const app = {
 
         legendChart.exit()
             .remove();
-       
+
 
         const legendGroups = legendChart
             .enter()
@@ -361,25 +369,25 @@ const app = {
 
         legendGroups.append('text');
         legendGroups.append('rect');
-        
+
         d3.select("#app1chart")
             .select('.legend')
             .selectAll('g')
             .select('text')
             .attr('x', (d, i) => i * legendElementWidth)
-            .attr("y", legendHeight/2)
+            .attr("y", legendHeight / 2)
             .text(d => d.key);
-        
+
         d3.select("#app1chart")
             .select('.legend')
             .selectAll('g')
             .select('rect')
-            .attr('x', (d, i) => i * legendElementWidth + legendElementWidth/2)
-            .attr("y", legendHeight/2-15)
+            .attr('x', (d, i) => i * legendElementWidth + legendElementWidth / 2)
+            .attr("y", legendHeight / 2 - 15)
             .attr('width', 20)
             .attr("height", 20)
             .attr('fill', d => d.color);
-            
+
     }
 };
 
