@@ -43,6 +43,7 @@
     stroke: grey;
     stroke-width: 1px;
     opacity: .2;
+    fill: white;
 }
 
 @font-face {
@@ -91,8 +92,8 @@ header {
 }
 
 #details {
-    float: left;
-    width: 200px;
+    vertical-align: top;
+    width: 800px;
     padding: 0.5em;
 
     border-width: 1px;
@@ -112,7 +113,6 @@ header {
 }
 
 #bar-chart {
-    float: left;
     width: 500px;
     margin-right: 20px;
 
@@ -145,13 +145,45 @@ header {
 /* Styles that clean up the layout;
  * you can ignore these: */
 
-/*div {*/
-/*display: inline-block;*/
-/*border: 1px solid lightgray;*/
-/*margin: 10px;*/
-/*}*/
+div {
+    display: inline-block;
+    margin: 10px;
+    vertical-align: top;
+}
 
 /*div,*/
 /*span {*/
 /*padding: 10px;*/
 /*}*/
+
+/* Styles added*/
+
+#bars rect {
+    cursor: pointer;
+}
+
+#map-view > svg {
+    display: block;
+}
+
+#details > div {
+    vertical-align: top;
+    min-height: 390px;
+    min-width: 200px;
+}
+
+#teams ul {
+    columns: 2
+}
+
+#teams li {
+    margin-left: 10px;
+}
+
+#years ul svg {
+    vertical-align: bottom;
+}
+
+#graticule, #points {
+    pointer-events: none;
+}

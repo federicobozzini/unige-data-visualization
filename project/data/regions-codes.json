@@ -1,0 +1,87 @@
+[
+    {
+        "cod": 1,
+        "name": "PIEMONTE"
+    },
+    {
+        "cod": 2,
+        "name": "VALLE D'AOSTA"
+    },
+    {
+        "cod": 3,
+        "name": "LOMBARDIA"
+    },
+    {
+        "index": 4,
+        "cod": 4,
+        "name": "TRENTINO ALTO-ADIGE"
+    },
+    {
+        "cod": 5,
+        "name": "VENETO"
+    },
+    {
+        "cod": 6,
+        "name": "FRIULI-VENEZIA-GIULIA"
+    },
+    {
+        "cod": 7,
+        "name": "LIGURIA"
+    },
+    {
+        "cod": 8,
+        "name": "EMILIA-ROMAGNA"
+    },
+    {
+        "cod": 9,
+        "name": "TOSCANA"
+    },
+    {
+        "cod": 10,
+        "name": "UMBRIA"
+    },
+    {
+        "cod": 11,
+        "name": "MARCHE"
+    },
+    {
+        "cod": 12,
+        "name": "LAZIO"
+    },
+    {
+        "cod": 13,
+        "name": "ABRUZZO"
+    },
+    {
+        "cod": 14,
+        "name": "MOLISE"
+    },
+    {
+        "cod": 15,
+        "name": "CAMPANIA"
+    },
+    {
+        "cod": 16,
+        "name": "PUGLIA"
+    },
+    {
+        "cod": 17,
+        "name": "BASILICATA"
+    },
+    {
+        "cod": 18,
+        "name": "CALABRIA"
+    },
+    {
+        "cod": 19,
+        "name": "SICILIA"
+    },
+    {
+        "cod": 20,
+        "name": "SARDEGNA"
+    },
+    {
+        "cod": 21,
+        "name": "ITALIA"
+    }
+]

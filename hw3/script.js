@@ -1,3 +1,5 @@
+'use strict';
+
 // Global var for FIFA world cup data
 var allWorldCupData;
 var projection;
@@ -84,16 +86,16 @@ function createBarChart(selectedDimension) {
         .append('rect')
         .attr('width', barWidth)
         .attr('height', d => H - yScale(d[selectedDimension]))
-        .attr('y', (d, i) => yScale(d[selectedDimension]))
-        .attr('x', (d, i) => xScale(d.YEAR)+BAR_MARGIN)
-        .attr('fill', (d, i) => colorScale(d[selectedDimension]));
+        .attr('y', d => yScale(d[selectedDimension]))
+        .attr('x', d => xScale(d.YEAR)+BAR_MARGIN)
+        .attr('fill', d => colorScale(d[selectedDimension]));
     
     bars.transition()
         .duration(transitionDuration)
         .ease(d3.easeQuad)
         .attr("height", d => H - yScale(d[selectedDimension]))
-        .attr('y', (d, i) => yScale(d[selectedDimension]))
-        .attr('fill', (d, i) => colorScale(d[selectedDimension]));
+        .attr('y', d => yScale(d[selectedDimension]))
+        .attr('fill', d => colorScale(d[selectedDimension]));
 
     bars.exit().remove();
 
@@ -106,7 +108,19 @@ function createBarChart(selectedDimension) {
 
     // Call the necessary update functions for when a user clicks on a bar.
     // Note: think about what you want to update when a different bar is selected.
+    
+    const barsTmp = d3.select("#bars").selectAll("rect");
 
+
+    barsTmp.on('click', function(d, i) {
+         barsTmp
+             .attr('fill', d => colorScale(d[selectedDimension]));
+        d3.select(this)
+            .attr('fill', 'red');
+
+        updateInfo(d);
+        updateMap(d);
+    });
 
 }
 
@@ -141,6 +155,21 @@ function updateInfo(oneWorldCup) {
     // Hint: For the list of teams, you can create an list element for each team.
     // Hint: Select the appropriate ids to update the text content.
 
+    const fieldsSelectors = ["#edition", "#host", "#winner", "#silver"];
+    const fieldsData = [oneWorldCup.EDITION, oneWorldCup.host, oneWorldCup.winner, oneWorldCup.runner_up];
+    const fieldsSelector = fieldsSelectors.join(',');
+    d3.selectAll(fieldsSelector).data(fieldsData).text(d => d);
+
+    if (d3.select('#teams').select('ul').empty())
+        d3.select('#teams').append('ul');
+    const teamList = d3.select("#teams")
+        .select('ul')
+        .selectAll('li')
+        .data(oneWorldCup.teams_names);
+
+    teamList.text(d => d);
+    teamList.enter().append('li').text(d => d);
+    teamList.exit().remove();
 
 }
 
@@ -156,7 +185,13 @@ function drawMap(world) {
 
     projection = d3.geoConicConformal().scale(150).translate([400, 350]);
 
+    const path = d3.geoPath().projection(projection);
+
+    const graticule = d3.geoGraticule()
+      .step([10, 10]);
+    
     // ******* TODO: PART IV *******
+
 
     // Draw the background (country outlines; hint: use #map)
     // Make sure and add gridlines to the map
@@ -167,6 +202,80 @@ function drawMap(world) {
     // Make sure and give your paths the appropriate class (see the .css selectors at
     // the top of the provided html file)
 
+    var topology = topojson.feature(world, world.objects.countries).features;
+
+    d3.select('#map')
+        .selectAll(".countries")
+        .data(topology, d => d.id)
+        .enter()
+        .insert("path")
+        .attr("class", "countries")
+        .attr("id", d => d.id)
+        .attr("d", path);
+
+    d3.select('#mapcontainer')
+        .insert('g')
+        .attr("id", "graticule")
+        .selectAll('.grat')
+        .data([graticule()])
+        .enter()
+        .insert('path')
+        .attr('class', 'grat')
+        .attr('d', path);
+
+    d3.select('#mapcontainer')
+        .selectAll(".countries")
+        .on('click', d => {
+            if (d3.select('body').select('#years').empty()) {
+                const yearsEl = d3.select('body')
+                .append('div')
+                .attr('id', 'years');
+
+                yearsEl.append('h3');
+                yearsEl.append('ul');
+            }
+
+            const countryIso = d.id ? d.id : d;
+
+            const yearsData = allWorldCupData
+                        .filter(worldCup => worldCup.teams_iso.includes(countryIso))
+                        .map(worldCup => {
+                            // this selection is not correct because the property teams_iso and teams_names are not synchronized. It's more like a proof of concept.
+                            const countryPosition = worldCup.teams_iso.findIndex(c => c === countryIso);
+                            const countryName = worldCup.teams_names[countryPosition];
+                            const winner = countryName === worldCup.winner;
+                            const runnerUp = countryName === worldCup.runner_up;
+                            return {
+                                year: worldCup.year,
+                                winner,
+                                runnerUp
+                            };
+                        });
+
+            d3.select("#years").select('h3').text(countryIso);
+
+            d3.select("#years")
+                .select('ul')
+                .selectAll('li')
+                .data(yearsData)
+                .select("span")
+                .text(d => d.year + (d.winner ? ' (winner)' : '') + (d.runnerUp ? ' (runner up)' : ''));
+            
+            d3.select("#years")
+                .select('ul')
+                .selectAll('li')
+                .data(yearsData)
+                .enter()
+                .append('li')
+                .append("span")
+                .text(d => d.year + (d.winner ? ' (winner)' : '') + (d.runnerUp ? ' (runner up)' : ''));
+            
+            d3.select("#years")
+                .select('ul')
+                .selectAll('li')
+                .data(yearsData).exit().remove();
+
+    });
 
 }
 
@@ -182,6 +291,10 @@ function clearMap() {
     //Hint: If you followed our suggestion of using classes to style
     //the colors and markers for hosts/teams/winners, you can use
     //d3 selection and .classed to set these classes on and off here.
+
+    d3.select('#map').select('.host').classed('host', false);
+    d3.select('#points').selectAll('circle').remove();
+    d3.select('#map').selectAll('.team').classed('team', false).classed('countries', true);
 
 }
 
@@ -210,7 +323,38 @@ function updateMap(worldcupData) {
 
     //We strongly suggest using classes to style the selected countries.
 
+    const winProjection = projection([worldcupData.WIN_LON, worldcupData.WIN_LAT]);
+    const winCoordinates = {
+        lon: winProjection[0],
+        lat: winProjection[1],
+        class: 'gold'
+    };
+    const rupProjection = projection([worldcupData.RUP_LON, worldcupData.RUP_LAT]);
+    const rupCoordinates = {
+        lon: rupProjection[0],
+        lat: rupProjection[1],
+        class: 'silver'
+    };
+    const markerCoordinates = [winCoordinates, rupCoordinates];
+    const markerSize = 6;
 
+    d3.select('#points')
+        .selectAll("circle")
+        .data(markerCoordinates)
+        .enter()
+        .append("circle")
+        .attr('class', d => d.class)
+        .attr('r', markerSize)
+        .attr('cx', d => d.lon)
+        .attr('cy', d => d.lat);
+
+    d3.select('#map')
+        .selectAll('.countries')
+        .data(worldcupData.teams_iso, d => d.id ? d.id : d)
+        .attr('id', d => d)
+        .attr('class', 'team');
+
+    d3.select("#" + worldcupData.host_country_code).classed('host', true);
 
 }
 

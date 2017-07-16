@@ -3,12 +3,14 @@
 
     const data = {};
     let regions = [];
+    let populations = [];
     let italyMap = {};
     let years = [];
+    let colorScale;
     const charts = [
         'hirings',
-        'dismissed',
-        'hirings/dismissed',
+        'terminations',
+        'hirings/terminations',
         'voucher'
     ];
     const italyIndex = 20;
@@ -29,38 +31,38 @@
 
     const formatter = new Intl.NumberFormat('en-US');
 
-    d3.json('data/app2.json', (error, jsonData) => {
-        data.hirings = jsonData.hirings;
-        data.voucher = jsonData.voucher;
-        data.population = jsonData.population;
-        data.dismissed = jsonData.dismissed;
-        regions = jsonData.regions;
-        years = jsonData.years;
-
-
-        data['hirings/dismissed'] = jsonData.hirings.map(h =>
-            ({
-                year: h.year,
-                data: jsonData.dismissed
-                    .find(d => d.year === h.year)
-                    .data.map((d, i) => h.data[i] / d)
-            })
-        );
-
-
-        d3.json('data/italy.json', (error, jsonItaly) => {
-            italyMap = jsonItaly;
-            init();
-        });
-    });
-
-
-    function init() {
+    async function init() {
+        await loadData();
         initTitle();
         initCmds();
         initMap();
         initBarChart();
         update();
+    }
+
+    async function loadData() {
+        const jsonData = await readJson('data/app2.json');
+        const regionsCodes = await readJson('data/regions-codes.json');
+        const regionsPopulation = await readJson('data/regions-population.json');
+        const jsonItaly = await readJson('data/italy.json');
+
+        data.hirings = jsonData.hirings;
+        data.voucher = jsonData.voucher;
+        data.terminations = jsonData.terminations;
+        years = jsonData.years;
+
+        regions = regionsCodes;
+        populations = regionsPopulation;
+        italyMap = jsonItaly;
+
+        data['hirings/terminations'] = jsonData.hirings.map(h =>
+            ({
+                year: h.year,
+                data: jsonData.terminations
+                    .find(d => d.year === h.year)
+                    .data.map((d, i) => h.data[i] / d)
+            })
+        );
     }
 
     function initTitle() {
@@ -70,10 +72,16 @@
     }
 
     function initMap() {
-        d3.select('#app2-map')
+        const svg = d3.select('#app2-map')
             .append('svg')
             .attr('width', mapSizes.width)
             .attr('height', mapSizes.height);
+
+        svg.append('g')
+            .attr('id', 'map-graph');
+
+        svg.append('g')
+            .attr('id', 'map-legend');
     }
 
     function initBarChart() {
@@ -154,28 +162,63 @@
         d3.select('#app2-title').select('h3').text(currentSelections.chart);
 
 
+        updateColorScale();
+        updateLegend();
         updateMap();
         updateBarChart();
     }
 
-    function updateMap() {
+    function updateColorScale() {
+        const data = getCurrentData(true);
 
-        function getData(d) {
-            return currentData[d.properties.COD_REG - 1];
-        }
-
-        const currentData = getCurrentData(currentSelections.chart, currentSelections.year);
-        const topoMap = topojson.feature(italyMap, italyMap.objects.reg2011).features;
-
-        const map = d3.select('#app2-map').select('svg');
-
-        const color = d3.scaleLinear()
-            .domain([
-                d3.min(removeTotals(currentData).map(cd => cd.value)),
-                d3.max(removeTotals(currentData).map(cd => cd.value))
-            ])
+        colorScale = d3.scaleLinear()
+            .domain([d3.min(data), d3.max(data)])
             .interpolate(d3.interpolateLab)
             .range([d3.rgb('#ffffbf'), d3.rgb('#009900')]);
+    }
+
+    function updateLegend() {
+        const legendSvg = d3.select('#map-legend');
+        const currentData = getCurrentData(true);
+        const min = d3.min(currentData);
+        const max = d3.max(currentData);
+        const legendCount = 5;
+        const legendColorSize = { width: 20, height: 20 };
+        const legendPosition = { x: 450, y: 10 };
+        const legendTextPadding = 4;
+
+        let step = (max - min) / legendCount;
+        if (step > 1000) step = parseInt(step, 10);
+        const range = d3.range(min, max, step);
+
+        legendSvg.selectAll('*').remove();
+
+        const legends = legendSvg.selectAll('g')
+            .data(range)
+            .enter()
+            .append('g');
+
+        legends.append('text')
+            .transition()
+            .attr('text-anchor', 'end')
+            .attr('x', legendPosition.x - 2)
+            .attr('y', (d, i) => (i + 1) * legendColorSize.height + legendPosition.y - legendTextPadding)
+            .text(d => formatter.format(d));
+
+        legends.append('rect')
+            .style('fill', d => colorScale(d))
+            .transition()
+            .attr('x', legendPosition.x)
+            .attr('y', (d, i) => i * legendColorSize.height + legendPosition.y)
+            .attr('width', legendColorSize.width)
+            .attr('height', legendColorSize.height);
+    }
+
+    function updateMap() {
+        const currentData = getCurrentData();
+        const topoMap = topojson.feature(italyMap, italyMap.objects.reg2011).features;
+
+        const map = d3.select('#map-graph');
 
         const projection = d3.geoMercator()
             .scale(2000)
@@ -188,7 +231,7 @@
 
         const tip = d3.tip()
             .attr('class', 'tip')
-            .html(d => getRegion(d).name + '<br>' + formatter.format(getData(d).label));
+            .html(d => getRegion(d).name + '<br>' + formatter.format(getData(d)));
         map.call(tip);
 
         reg.enter()
@@ -199,7 +242,7 @@
             .on('mouseover', tip.show)
             .on('mouseout', tip.hide)
             .transition().duration(400)
-            .style('fill', d => color(getData(d).value));
+            .style('fill', d => colorScale(getData(d)));
 
         map.selectAll('.region')
             .on('click', reg => {
@@ -208,38 +251,49 @@
                 updateBarChart();
             });
 
-        map.on('click', reg => {
-            currentSelections.regionIndex = italyIndex;
-            updateBarChart();
-        });
+        d3.select('#app2-map')
+            .select('svg')
+            .on('click', reg => {
+                currentSelections.regionIndex = italyIndex;
+                updateBarChart();
+            });
+
+        function getData(d) {
+            return currentData[d.properties.COD_REG - 1];
+        }
     }
 
-    function getCurrentData(chart, year) {
-        const y = getNum(year);
-        const dataSelected = data[chart].find(d => d.year === y).data;
+    function getCurrentData(removeTotals) {
+        const y = getNum(currentSelections.year);
+        let dataSelected = data[currentSelections.chart].find(d => d.year === y).data;
+
+        if (removeTotals)
+            dataSelected = dataSelected.slice(0, dataSelected.length - 1);
 
         if (currentSelections.normalized) {
-            const population = data.population.find(p => p.year === y).data;
-            return dataSelected.map((d, i) => ({
-                label: d,
-                value: d / population[i]
-            }));
+            const population = populations.find(p => p.year === y).data;
+            return dataSelected.map((d, i) => d / population[i]);
         }
 
-        return dataSelected.map(d => ({ label: d, value: d }));
+        return dataSelected;
     }
 
     function updateBarChart() {
+        const ri = currentSelections.regionIndex;
         const barChartData = data[currentSelections.chart]
-            .map(d => ({
-                year: d.year,
-                datum: d.data[currentSelections.regionIndex]
-            }));
-
+            .map(yd => {
+                const year = yd.year;
+                let datum = yd.data[ri];
+                if (currentSelections.normalized) {
+                    const pop = populations.find(p => p.year === year).data[ri];
+                    datum = datum / pop;
+                }
+                return { year, datum };
+            });
 
         const barChartTitle = d3.select('#app2-info')
             .select('h3')
-            .text(regions[currentSelections.regionIndex].name);
+            .text(regions[ri].name);
 
         const barChartSvg = d3.select('#app2-info').select('svg');
         const svg = {
@@ -277,28 +331,26 @@
             .attr('y', d => scales.y(d.datum))
             .attr('width', scales.x.bandwidth() - barSpacing)
             .attr('height', d => chartSize.height - scales.y(d.datum))
-            .style('fill', d => scales.color(d.datum))
+            .style('fill', d => scales.color(d.datum));
 
         rects.exit()
             .transition()
             .remove();
 
+        function createScales(size, data) {
+            const x = d3.scaleBand().rangeRound([0, size.width]),
+                y = d3.scaleLinear().rangeRound([size.height, 0]),
+                color = d3.scaleLinear();
+
+            x.domain(data.map(d => d.year));
+            y.domain([d3.min(data, d => d.datum) * 0.5, d3.max(data, d => d.datum)]);
+            color.domain([0, d3.max(data, d => d.datum)])
+                .interpolate(d3.interpolateLab)
+                .range([d3.rgb('#E1F5FE'), d3.rgb('#01679B')]);
+
+            return { x, y, color };
+        }
     }
-
-    function createScales(size, data) {
-        const x = d3.scaleBand().rangeRound([0, size.width]),
-            y = d3.scaleLinear().rangeRound([size.height, 0]),
-            color = d3.scaleLinear();
-
-        x.domain(data.map(d => d.year));
-        y.domain([d3.min(data, d => d.datum) * 0.5, d3.max(data, d => d.datum)]);
-        color.domain([0, d3.max(data, d => d.datum)])
-            .interpolate(d3.interpolateLab)
-            .range([d3.rgb('#ffffbf'), d3.rgb('#009900')])
-
-        return { x, y, color }
-    }
-
 
     function createAxis(svg, scales, size, padding) {
         svg.xAxis
@@ -336,5 +388,18 @@
 
         return +str.replace(/\D+/g, '');
     }
+
+    function readJson(url) {
+        return new Promise((resolve, reject) => {
+            d3.json(url, (error, data) => {
+                if (error)
+                    return reject(error);
+                resolve(data);
+            });
+        });
+    }
+
+
+    d3.select(window).on('load', init);
 
 })();
