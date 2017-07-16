@@ -74,7 +74,7 @@ path.region {
     cursor: pointer;
 }
 path.region-selected {
-    stroke: #ff0000;
+    fill: #156b9e !important;
     cursor: default;
     z-index: 100;
 }

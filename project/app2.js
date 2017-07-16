@@ -147,6 +147,8 @@
             chart = d3.select('#chart-cmd').node().value,
             normalized = d3.select('#normalize-cmd').property('checked');
 
+        updateRegionSelection();
+
         currentSelections.chart = chart;
         currentSelections.year = year;
         currentSelections.normalized = normalized;
@@ -215,7 +217,6 @@
     }
 
     function updateMap() {
-        updateMapSelection();
         const currentData = getCurrentData();
         const topoMap = topojson.feature(italyMap, italyMap.objects.reg2011).features;
 
@@ -237,8 +238,8 @@
 
         reg.enter()
             .append('path')
-            .attr('class', 'region')
             .attr('id', d => 'app2_region_' + d.properties.COD_REG)
+            .attr('class', 'region')
             .attr('d', path)
             .merge(reg)
             .on('mouseover', tip.show)
@@ -248,16 +249,17 @@
 
         map.selectAll('.region')
             .on('click', reg => {
+                console.log(reg);
                 d3.event.stopPropagation();
-                updateMapSelection(reg.properties.COD_REG);
+                updateRegionSelection(reg.properties.COD_REG);
                 currentSelections.regionIndex = reg.properties.COD_REG - 1;
                 updateBarChart();
             });
 
         d3.select('#app2-map')
             .select('svg')
-            .on('click', reg => {
-                updateMapSelection();
+            .on('click', () => {
+                updateRegionSelection();
                 currentSelections.regionIndex = italyIndex;
                 updateBarChart();
             });
@@ -267,13 +269,13 @@
         }
     }
 
-    function updateMapSelection(selectedCOD_REG) {
+    function updateRegionSelection(selectedCOD_REG) {
         d3.select('#app2_region_' + (currentSelections.regionIndex + 1))
             .classed('region-selected', false);
 
         if (selectedCOD_REG) {
-            d3.select('#app2_region_' + selectedCOD_REG)
-                .raise();
+            /*d3.select('#app2_region_' + selectedCOD_REG)
+                .raise();*/
             d3.select('#app2_region_' + selectedCOD_REG)
                 .classed('region-selected', true);
 
