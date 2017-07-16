@@ -158,7 +158,8 @@ const app = {
         const n = jobMarketData.length;
         const minYear = d3.min(jobMarketData.map(r => r.year));
         const maxYear = d3.max(jobMarketData.map(r => r.year));
-        const xpad = 100;
+        const xLeftPad = 100;
+        const xRightPad = 10;
         const yBottomPad = 100;
         const yTopPad = 10;
 
@@ -166,7 +167,7 @@ const app = {
         const svgHeight = svgBounds.height;
         const svgWidth = svgBounds.width;
         const H = svgHeight - yTopPad - yBottomPad;
-        const W = svgWidth - xpad;
+        const W = svgWidth - xLeftPad - xRightPad;
         const legendHeight = 50;
         const legendWidth = W;
         const labelLength = 42;
@@ -202,7 +203,7 @@ const app = {
                 .attr('class', 'legend')
                 .attr('width', legendWidth)
                 .attr('height', legendHeight)
-                .attr("transform", `translate(${xpad}, 0)`);
+                .attr("transform", `translate(${xLeftPad}, 0)`);
 
             const mainChart = d3.select('#app1chart')
                 .append('svg')
@@ -212,15 +213,15 @@ const app = {
             const mainBox = mainChart
                 .append('g')
                 .attr('class', 'box')
-                .attr("transform", `translate(${xpad}, ${yTopPad})`);
+                .attr("transform", `translate(${xLeftPad}, ${yTopPad})`);
 
             mainChart.append('g')
                 .attr('class', 'xAxis')
-                .attr("transform", `translate(${xpad},${H + yTopPad})`);
+                .attr("transform", `translate(${xLeftPad},${H + yTopPad})`);
 
             mainChart.append('g')
                 .attr('class', 'yAxis')
-                .attr("transform", `translate(${xpad}, ${yTopPad})`);
+                .attr("transform", `translate(${xLeftPad}, ${yTopPad})`);
 
             mainBox
                 .append('g')
