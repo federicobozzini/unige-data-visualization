@@ -104,8 +104,25 @@ The main interaction a User can make with the application are:
 
 - the user may select some external data to plot, with a radio button. The external data include "events", "reforms" and "legislatures". Events means some political or economic events that may have influenced the job market (divorce law introduction, abortion law introduction, introduction of the euro). Reforms means the main job market reforms introduced regarding the job market. Legislatures is self-explanatory. When some external data are selected, they are represented as a timeline, so with labeled vertical lines.
 
-
 ![app 1 screenshot](img/app1.png)
+
+### App 2 - regional indicators
+
+The user may:
+
+- Change the visualized dataset with two select input: one for year (from 2013 to 2015) and one for data (hirings, terminations, voucher and hirings/terminations). Changing the dataset the map and the bar-chart will automatically update.
+The map will show the data with a scale of green wheres the lighter one is for the lower value and darker one for the higher, a legend will show the values of the range.
+The bar-chart will show the trend of the total of all regions of the selected dataset trough all years.
+
+- Click on the checkbox "Normalize with population" to show the data of each region relative to the population, the normalized value is not siginficant in absolute but let have a better grasp of differences between regions.
+
+- Hover the mouse on the map or on a bar to see a popup that gives the exact value of that region of the given dataset.
+
+- Click on a region of the map to change the data displayed on the bar-chart, it will show the selected values over the years of the clicked region.
+
+- Click outside on the blank area of the map to revert the bar-chart will to the data of all regions (Italy).
+
+![app 2 screenshot](img/app2.png)
 
 ## Specific implementation techniques
 
@@ -114,6 +131,8 @@ The main interaction a User can make with the application are:
 To complete the application 1 the main technique the we used that were novel for us, was the *d3.stack* tools, to plot a stacked area chart using the full capabilities of *d3.js*. We also got a much better understing of [grouping vs non-grouping selection](https://bost.ocks.org/mike/selection/).
 
 ### App 2 - regional indicators
+
+To better show the data we used d3-tip a d3 plugin used to show tooltips on the visualizations.
 
 ## Technical requirements
 
