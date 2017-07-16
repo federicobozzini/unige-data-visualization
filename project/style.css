@@ -73,6 +73,11 @@ path.region {
     stroke: #cecece;
     cursor: pointer;
 }
+path.region-selected {
+    stroke: #ff0000;
+    cursor: default;
+    z-index: 100;
+}
 
 .tip {
     border: 1px solid #cecece;

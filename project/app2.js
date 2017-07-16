@@ -215,6 +215,7 @@
     }
 
     function updateMap() {
+        updateMapSelection();
         const currentData = getCurrentData();
         const topoMap = topojson.feature(italyMap, italyMap.objects.reg2011).features;
 
@@ -237,6 +238,7 @@
         reg.enter()
             .append('path')
             .attr('class', 'region')
+            .attr('id', d => 'app2_region_' + d.properties.COD_REG)
             .attr('d', path)
             .merge(reg)
             .on('mouseover', tip.show)
@@ -247,6 +249,7 @@
         map.selectAll('.region')
             .on('click', reg => {
                 d3.event.stopPropagation();
+                updateMapSelection(reg.properties.COD_REG);
                 currentSelections.regionIndex = reg.properties.COD_REG - 1;
                 updateBarChart();
             });
@@ -254,6 +257,7 @@
         d3.select('#app2-map')
             .select('svg')
             .on('click', reg => {
+                updateMapSelection();
                 currentSelections.regionIndex = italyIndex;
                 updateBarChart();
             });
@@ -261,6 +265,20 @@
         function getData(d) {
             return currentData[d.properties.COD_REG - 1];
         }
+    }
+
+    function updateMapSelection(selectedCOD_REG) {
+        d3.select('#app2_region_' + (currentSelections.regionIndex + 1))
+            .classed('region-selected', false);
+
+        if (selectedCOD_REG) {
+            d3.select('#app2_region_' + selectedCOD_REG)
+                .raise();
+            d3.select('#app2_region_' + selectedCOD_REG)
+                .classed('region-selected', true);
+
+        }
+
     }
 
     function getCurrentData(removeTotals) {
