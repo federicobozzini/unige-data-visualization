@@ -1,0 +1,13 @@
+version: '2'
+services:
+  dv-hw2:
+    image: python:3.3-alpine
+    container_name: dv-hw3
+    ports:
+      - "8089:8080"
+      - "2025:22"
+    volumes:
+      - .:/var/www
+    restart: always
+    working_dir: /var/www
+    entrypoint: python -m http.server 8080
