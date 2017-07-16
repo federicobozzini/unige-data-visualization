@@ -1,0 +1,17 @@
+{
+    // Page Option. Border Top. units: mm, cm, in, px
+    "markdown-pdf.border.top": "2.5cm",
+
+    // Page Option. Border bottom. units: mm, cm, in, px
+    "markdown-pdf.border.bottom": "2cm",
+
+    // Page Option. Border right. units: mm, cm, in, px
+    "markdown-pdf.border.right": "2cm",
+
+    // Page Option. Border left. units: mm, cm, in, px
+    "markdown-pdf.border.left": "2cm",
+
+    "markdown-pdf.styles": [
+        ".vscode\\documentation.css"
+    ]
+}
