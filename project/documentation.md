@@ -25,7 +25,7 @@ And then browse to:
 
 A working copy of the project is accessible at:
 
-    [https://federicobozzini.github.io/unige-data-visualization/project/](https://federicobozzini.github.io/unige-data-visualization/project/)
+    [https://federicobozzini.github.io/unige-data-visualization/project/index.html](https://federicobozzini.github.io/unige-data-visualization/project/index.html)
 
 ## Analysis of the data
 
