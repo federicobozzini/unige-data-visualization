@@ -48,6 +48,10 @@
     font-size: 12px;
 }
 
+#app1 h4 {
+    margin: 0;
+}
+
 /* App 2 */
 
 #app2-cmds {
