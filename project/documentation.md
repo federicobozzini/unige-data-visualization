@@ -52,6 +52,7 @@ On the chart the user should be able to visualize the external events as a timel
 It should be possible to rescale the data to let the user better understand the rate trends at a glance. It should be also possible to focus the visualization on males or females (by putting them on the bottom of the stacking).
 
 A basic mockup of the app:
+
 ![app 1 mockup](img/app1mockup.png)
 
 ### App 2 - regional indicators
@@ -63,6 +64,7 @@ It should be possible for the users to visualize the data both in absolute terms
 We also decided to add as an indicator the ratio between the hirings and terminations. This may offer an interesting overview of the health status of a local job market.
 
 A basic mockup of the app:
+
 ![app 2 mockup](img/app2mockup.png)
 
 ## Data pre-processing
@@ -104,6 +106,8 @@ The main interaction a User can make with the application are:
 
 - the user may select some external data to plot, with a radio button. The external data include "events", "reforms" and "legislatures". Events means some political or economic events that may have influenced the job market (divorce law introduction, abortion law introduction, introduction of the euro). Reforms means the main job market reforms introduced regarding the job market. Legislatures is self-explanatory. When some external data are selected, they are represented as a timeline, so with labeled vertical lines.
 
+The applications show a basic tooltip to the user to inform them of the rate values, according to the position of the mouse.
+
 ![app 1 screenshot](img/app1.png)
 
 ### App 2 - regional indicators
@@ -129,6 +133,8 @@ The bar-chart will show the trend of the total of all regions of the selected da
 ### App 1 - gender balance
 
 To complete the application 1 the main technique the we used that were novel for us, was the *d3.stack* tools, to plot a stacked area chart using the full capabilities of *d3.js*. We also got a much better understing of [grouping vs non-grouping selection](https://bost.ocks.org/mike/selection/).
+
+To add the tooltip to the lines we decided to code everything by hand (opposed to app 2 where we used a plugin) and the implementation required us to get some additional knowledge about *d3.js* (with methods like *d3.bisect*, *d3.invert*) to get back the original data of a graph from points in a svg.
 
 ### App 2 - regional indicators
 
