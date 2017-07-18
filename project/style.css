@@ -52,6 +52,19 @@
     margin: 0;
 }
 
+#app1chart .border {
+  fill: none;
+  pointer-events: all;
+}
+
+#app1chart .focus.invisible {
+    display: none;
+}
+
+#app1chart .focus text {
+    font-size: 10px;
+}
+
 /* App 2 */
 
 #app2-cmds {

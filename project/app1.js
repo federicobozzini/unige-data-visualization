@@ -236,6 +236,10 @@ const app = {
                 .attr('class', 'border')
                 .attr('width', W)
                 .attr('height', H)
+
+            mainBox
+                .append("g")
+                .attr("class", "focus invisible");
         }
 
         const xScale = d3.scaleLinear()
@@ -388,6 +392,67 @@ const app = {
             .attr('width', 20)
             .attr("height", 20)
             .attr('fill', d => d.color);
+
+
+        const getVal = d => isLines ? d.val : d[1];
+        const getYear = d => isLines ? d.year : d.data.year;
+        const bisect = d3.bisector(d => getYear(d)).left;
+
+        const focus = d3
+                .select("#app1chart")
+                .select('.focus');
+
+        const markers = focus
+                .selectAll('g')
+                .data(plottableData);
+
+        markers.exit()
+            .remove();
+
+        const markersGroup = markers
+            .enter()
+            .append('g');
+
+        markersGroup.append("circle")
+            .attr("r", 3);
+
+        markersGroup.append("text")
+            .attr("x", -30)
+            .attr("y", 12);
+
+        d3.select("#app1chart")
+            .select('.border')
+            .on("mouseover", () => focus.classed("invisible", false))
+            .on("mouseout", () => focus.classed("invisible", true))
+            .on("mousemove", function() {
+                const mouseCoordinates = d3.mouse(this);
+                const x0 = xScale.invert(mouseCoordinates[0]);
+                
+                focus
+                    .selectAll('g')
+                    .attr("transform", (d, i) => {
+                        const j = bisect(plottableData[i], x0, 1);
+                        const v0 = plottableData[i][j - 1];
+                        const v1 = plottableData[i][j];
+                        const v = x0 - getYear(v0) > getYear(v1) - x0 ?v1 : v0;
+                        const y = getVal(v);
+                        const year = getYear(v);
+                        return `translate(${xScale(year)},${yScale(y)})`;
+                    });
+
+                focus
+                    .selectAll('g')
+                    .select('text')
+                    .text((d, i) => {
+                        const j = bisect(plottableData[i], x0, 1);
+                        const v0 = plottableData[i][j - 1];
+                        const v1 = plottableData[i][j];
+                        const v = x0 - getYear(v0) > getYear(v1) - x0 ?v1 : v0;
+                        const val = d3.format('.0%')(getVal(v));
+                        const year = getYear(v);
+                        return `${year} - ${val}`;
+                    });
+            });
 
     }
 };
