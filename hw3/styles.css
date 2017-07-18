@@ -187,3 +187,7 @@ div {
 #graticule, #points {
     pointer-events: none;
 }
+
+#map {
+    cursor: pointer;
+}
