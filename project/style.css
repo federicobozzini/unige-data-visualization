@@ -65,6 +65,10 @@
     font-size: 10px;
 }
 
+#app1chart .focus > * {
+    pointer-events: none;
+}
+
 /* App 2 */
 
 #app2-cmds {
