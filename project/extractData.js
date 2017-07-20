@@ -1,6 +1,12 @@
 const xlsx = require('xlsx');
 const fs = require('fs');
 
+
+Array.prototype.move = function(from, to) {
+    this.splice(to, 0, this.splice(from, 1)[0]);
+};
+
+
 extractApp1Data();
 extractApp2Data();
 
@@ -78,7 +84,8 @@ function extractApp2Data() {
     const voucherXls = workbook.Sheets[workbook.SheetNames[3]]
     const voucherRaw = xlsx.utils.sheet_to_json(voucherXls, { header: 1 });
 
-
+    voucherRaw.move(4, 8);
+    
     const voucher = [
         {
             year: 2013,
